@@ -2,7 +2,7 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,vscode,pycharm,jupyternotebooks,java,android,androidstudio,django
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,vscode,pycharm,jupyternotebooks,java,android,androidstudio,django
 
-.idea
+.idea/
 
 ### Android ###
 # Built application files
