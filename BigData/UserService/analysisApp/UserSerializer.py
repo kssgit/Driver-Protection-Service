@@ -3,7 +3,7 @@ from .models import User,Co2,Eye,Emotion
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        models = User
+        model = User
         fields = [
             'user_id',
             'user_pwd',
