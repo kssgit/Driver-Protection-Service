@@ -1,4 +1,5 @@
 from django.db import models
+
 class User(models.Model) :
     user_id = models.CharField(max_length=50, primary_key=True)
     user_pwd = models.CharField(max_length=50)
