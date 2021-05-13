@@ -11,9 +11,34 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
+        <android.support.design.widget.TabLayout
+            android:id="@+id/analysis_tab_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"/>
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/total_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="종합 분석" />
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/co2_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="이산화탄소" />
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/emotion_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="감정" />
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/eye_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="눈감음" />
+        </android.support.design.widget.TabLayout>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
