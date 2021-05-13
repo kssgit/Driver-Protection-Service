@@ -2,13 +2,11 @@
 
 시스템 설계도
 
-![시스템 설계 및 기능](/md-images/시스템 설계 및 기능.png)
+![system_Design&Function](md-images/system_Design&Function.png)
 
 
 
 서비스 흐름도 
 
-![졸음운전 서비스 흐름](/md-images/졸음운전 서비스 흐름.png)
-
-
+![Service_Flow](md-images/Service_Flow.png)
 
