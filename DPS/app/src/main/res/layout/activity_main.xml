@@ -14,32 +14,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <android.support.design.widget.TabLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <android.support.design.widget.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <android.support.design.widget.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <android.support.design.widget.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </android.support.design.widget.TabLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingTop="100"
-            android:paddingBottom="100">
+            android:paddingTop="100dp"
+            android:paddingBottom="100dp">
 
             <TextView
                 android:id="@+id/textView"
@@ -64,10 +41,10 @@
                 android:layout_marginRight="70dp"
                 android:layout_weight="1"
                 android:ems="10"
+                android:gravity="center_horizontal"
                 android:hint="아이디"
                 android:inputType="textPersonName"
-                android:maxLength="50"
-                android:paddingLeft="30" />
+                android:maxLength="50" />
 
         </LinearLayout>
 
@@ -75,7 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingTop="20">
+            android:paddingTop="20dp">
 
             <EditText
                 android:id="@+id/userPwd"
@@ -85,9 +62,9 @@
                 android:layout_marginRight="70dp"
                 android:layout_weight="1"
                 android:ems="10"
+                android:gravity="center_horizontal"
                 android:hint="패스워드"
-                android:inputType="textPassword"
-                android:paddingLeft="30" />
+                android:inputType="textPassword" />
 
         </LinearLayout>
 
@@ -96,14 +73,14 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="horizontal"
-            android:paddingTop="100">
+            android:paddingTop="100dp">
 
             <Button
                 android:id="@+id/login_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
-                android:layout_marginRight="20p"
+                android:layout_marginRight="20dp"
                 android:layout_weight="1"
                 android:backgroundTint="#03A9F4"
                 android:text="로그인" />
