@@ -1,7 +1,7 @@
 import time
 import threading
-# import paho.mqtt.client as mqtt
-# import RPi.GPIO as GPIO
+import paho.mqtt.client as mqtt
+import RPi.GPIO as GPIO
 from tensorflow.keras.models import load_model
 import tensorflow as tf
 import cv2
@@ -34,7 +34,11 @@ class MyMqtt_Sub:
         self.img_size = (32, 32)
 
         self.model = load_model('model.h5 경로')
-        self.first = True
+        self.origin_img = None
+
+        self.eye_blink = None
+        self.co2 = None
+        self.motion = None
 
         ###########################
         client.loop_forever()
@@ -54,74 +58,90 @@ class MyMqtt_Sub:
         print(myval)
         print(msg.topic + "----" + str(myval))
 
-        if self.first:
-            self.origin_img = cv2.imread('이미지')
-            self.first = False
-
-        compare_img = cv2.imread('이미지')
-
-        # 이산화탄소 데이터 / 이미지 파일 구분?
+        # 움직임 탐지 방식 => 원본 이미지와 새로운 이미지 사이의 달라진 픽셀 측정
+        # 첫 이미지를 원본 이미지로??? 아니면 주기적으로 원본 이미지 수집 => 게이트에서 판별???
         if myval == 'img_data':
-            faces = self.detector(myval)
+            if self.origin_img is None:
+                self.origin_img = cv2.imread('이미지')
+            else:
+                compare_img = cv2.imread('이미지')
+                # 이산화탄소 데이터 / 이미지 파일 구분?
+                faces = self.detector(myval)
 
-            for face in faces:
-                shapes = self.predictor(compare_img, face)
-                shapes = face_utils.shape_to_np(shapes)
+                for face in faces:
+                    shapes = self.predictor(compare_img, face)
+                    shapes = face_utils.shape_to_np(shapes)
 
-                eye_img_l, eye_rect_l = self.crop_eye(compare_img, eye_points=shapes[36:42])
-                eye_img_r, eye_rect_r = self.crop_eye(compare_img, eye_points=shapes[42:48])
+                    eye_img_l, eye_rect_l = self.crop_eye(compare_img, eye_points=shapes[36:42])
+                    eye_img_r, eye_rect_r = self.crop_eye(compare_img, eye_points=shapes[42:48])
 
-                eye_img_l = cv2.resize(eye_img_l, dsize=self.img_size)
-                eye_img_r = cv2.resize(eye_img_r, dsize=self.img_size)
+                    eye_img_l = cv2.resize(eye_img_l, dsize=self.img_size)
+                    eye_img_r = cv2.resize(eye_img_r, dsize=self.img_size)
 
-                # 왼쪽 눈
-                eye_input_l = eye_img_l.copy().reshape((1, self.img_size[1], self.img_size[0], 3)).astype(np.float32)
-                eye_input_l = eye_input_l / 255
+                    # 왼쪽 눈
+                    eye_input_l = eye_img_l.copy().reshape((1, self.img_size[1], self.img_size[0], 3)).astype(
+                        np.float32)
+                    eye_input_l = eye_input_l / 255
 
-                pred_l = self.model.predict(eye_input_l)
-                pred_l = np.argmax(pred_l)
+                    pred_l = self.model.predict(eye_input_l)
+                    pred_l = np.argmax(pred_l)
 
-                # 오른쪽 눈
-                eye_input_r = eye_img_r.copy().reshape((1, self.img_size[1], self.img_size[0], 3)).astype(np.float32)
-                eye_input_r = eye_input_r / 255
+                    # 오른쪽 눈
+                    eye_input_r = eye_img_r.copy().reshape((1, self.img_size[1], self.img_size[0], 3)).astype(
+                        np.float32)
+                    eye_input_r = eye_input_r / 255
 
-                pred_r = self.model.predict(eye_input_r)
-                pred_r = np.argmax(pred_r)
+                    pred_r = self.model.predict(eye_input_r)
+                    pred_r = np.argmax(pred_r)
 
-                # 눈에 직사각형 그리기
-                # cv2.rectangle(compare_img, pt1=tuple(eye_rect_l[0:2]), pt2=tuple(eye_rect_l[2:4]),
-                #               color=(255, 255, 255), thickness=2)
-                # cv2.rectangle(compare_img, pt1=tuple(eye_rect_r[0:2]), pt2=tuple(eye_rect_r[2:4]),
-                #               color=(255, 255, 255), thickness=2)
-                #
-                # cv2.putText(compare_img, str(pred_l), tuple(eye_rect_l[0:2]), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
-                #             (255, 255, 255), 2)
-                # cv2.putText(compare_img, str(pred_r), tuple(eye_rect_r[0:2]), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
-                #             (255, 255, 255), 2)
+                    # 눈에 직사각형 그리기
+                    # cv2.rectangle(compare_img, pt1=tuple(eye_rect_l[0:2]), pt2=tuple(eye_rect_l[2:4]),
+                    #               color=(255, 255, 255), thickness=2)
+                    # cv2.rectangle(compare_img, pt1=tuple(eye_rect_r[0:2]), pt2=tuple(eye_rect_r[2:4]),
+                    #               color=(255, 255, 255), thickness=2)
+                    #
+                    # cv2.putText(compare_img, str(pred_l), tuple(eye_rect_l[0:2]), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
+                    #             (255, 255, 255), 2)
+                    # cv2.putText(compare_img, str(pred_r), tuple(eye_rect_r[0:2]), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
+                    #             (255, 255, 255), 2)
 
-                # 두 눈 다 감은 경우 졸음으로 예측
-                if pred_l == 0 and pred_r == 0:
-                    n_count += 1
-                else:
-                    n_count = 0
+                    # 두 눈 다 감은 경우 졸음으로 예측
+                    if pred_l == 0 and pred_r == 0:
+                        n_count += 1
+                    else:
+                        n_count = 0
+                        self.eye_blink = 0
 
-                # n_count가 10 초과하면 경고 메세지
-                if n_count > 10:
-                    # cv2.putText(compare_img, "Wake up!(eye_blink)", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                    #             (0, 0, 255), 2)
-                    print("Wake up!(eye_blink)")
+                    # n_count가 10 초과하면 경고 메세지
+                    if n_count > 10:
+                        # cv2.putText(compare_img, "Wake up!(eye_blink)", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                        #             (0, 0, 255), 2)
+                        print("Wake up!(eye_blink)")
+                        self.eye_blink = 1
 
-                # 원본과 움직인 이미지를 비교해서 mse가 일정 이상일 시 움직인것으로 판단
-                mse_val = self.mse(self.origin_img, compare_img)
+                    # 원본과 움직인 이미지를 비교해서 mse가 일정 이상일 시 움직인것으로 판단
+                    mse_val = self.mse(self.origin_img, compare_img)
 
-                if mse_val > 2000:
-                    # cv2.putText(compare_img, "Wake up!(movement)", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                    #             (255, 0, 0), 2)
-                    print("Wake up!(movement)")
-
+                    if mse_val > 2000:
+                        # cv2.putText(compare_img, "Wake up!(movement)", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                        #             (255, 0, 0), 2)
+                        print("Wake up!(movement)")
+                        self.motion = 1
+                    else:
+                        self.motion = 0
 
         elif myval == 'Co2_data':
-            pass
+            if myval > 1500:
+                print("Wake Up!(Co2)")
+                self.co2 = 1
+            else:
+                self.co2 = 0
+
+        self.sleep_gate(self, self.eye_blink, self.motion, self.co2)
+
+    def sleep_gate(self, eye_blink, motion, co2):
+        if eye_blink == 1 and motion == 1 and co2 == 1:
+            print("졸았다!!!!!")
 
     def mse(self, img, compare_img):
         err = np.sum((img.astype("float") - compare_img.astype("float")) ** 2)
