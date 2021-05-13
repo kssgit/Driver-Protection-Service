@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import java.io.Console;
 import java.io.IOException;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -28,48 +29,56 @@ public class MainActivity extends AppCompatActivity {
     Button join_button;
     Retrofit retrofit;
     RetrofitAPI retrofitAPI;
-    EditText user_id,user_pwd;
+    EditText userid,userpwd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        retrofit = new Retrofit.Builder().baseUrl(retrofitAPI.REGIST_URL).build();
+        retrofit = new Retrofit.Builder()
+                .baseUrl(retrofitAPI.REGIST_URL)
+                .build();
         retrofitAPI = retrofit.create(RetrofitAPI.class);
 
 
         //  로그인 버튼 클릭
         login_button = findViewById(R.id.login_button);
+        userid=findViewById(R.id.userID);
+        userpwd=findViewById(R.id.userPwd);
         login_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                user_id.findViewById(R.id.userID);
-                user_pwd.findViewById(R.id.userPwd);
-                String csrf = null;
-                try{
-                    csrf = new GetCsrf_Token().csrftoken;
-                }catch (IOException e){
 
-                }
-                Call<String> call = retrofitAPI.getLogin(csrf ,user_id.getText().toString(),user_pwd.getText().toString());
-                call.enqueue(new Callback<String>() {
+//                String csrf = null;
+//                try{
+//                    csrf = new GetCsrf_Token().csrftoken;
+//                }catch (IOException e){
+//
+//                }
+                String user_id = userid.getText().toString();
+                String user_pwd = userpwd.getText().toString();
+
+                Call<ResponseBody> call = retrofitAPI.getUserdata("test1");
+                call.enqueue(new Callback<ResponseBody>() {
                     @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        if (response.isSuccessful() && response.body() != null){
-                            Log.e("onSuccess", response.body());
-                            String jsonResponse = response.body();
-
-                            Log.d("result",jsonResponse);
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        try{
+                            Log.i("TEST1",response.body().toString());
+                            System.out.println("성공!!!!");
+                        }catch (Exception e){
 
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-//                        Log.e(Tag, "에러 = " + t.getMessage());
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        System.out.println("실패");
+
+                        System.out.println(t.toString());
                     }
                 });
+
                 //  1. 옳은 로그인인지 판단
 
                 // 1-1. 옳은 로그인이 아니면
