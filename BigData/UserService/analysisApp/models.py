@@ -2,7 +2,7 @@ from django.db import models
 
 class User(models.Model) :
     user_id = models.CharField(max_length=50, primary_key=True)
-    user_pwd = models.CharField(max_length=50)
+    user_pwd = models.CharField(max_length=250)
     name = models.CharField(max_length=50)
     birth = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=50)

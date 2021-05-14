@@ -4,6 +4,7 @@ from .models import User,Co2,Eye,Emotion
 from .UserSerializer import UserSerializer,UserLoginSerializer
 from .UserDataSerializer import Co2Serializer,EmotionSerializer,EyeSerializer
 import json
+import hashlib
 # from django.core.context_processors import csrf
 
 # 회원 운전 위험수치 가져오기
@@ -35,10 +36,17 @@ def userData(request,userid):
 # 회원 가입
 @api_view(['POST'])
 def createUser(request):
+    user_pwd = request.data['user_pwd'].encode()
+    encode_pwd = hashlib.sha256(user_pwd).hexdigest()
+
+    json_data = request.data
+    print(json_data)
+    json_data['user_pwd']=encode_pwd
+    print(json_data)
     # 역 직렬화
-    print(request.data)
-    serializer = UserSerializer(data = request.data)
-    # 사용자 비밀번호 암호화를 해야 하나??
+    serializer = UserSerializer(data = json_data)
+   
+
     if(serializer.is_valid()):
         print("성공")
         serializer.save()
@@ -68,14 +76,18 @@ def login(request):
     # print(json_param)
     user_id = json_param['user_id']
     # print("user_id :",user_id)
-    user_pwd = json_param['user_pwd']
+    userpwd = json_param['user_pwd']
     # print("user_pwd :",user_pwd)
-    
+
+    user_pwd = userpwd.encode()
+    encode_pwd = hashlib.sha256(user_pwd).hexdigest()
+    print(encode_pwd)
+
     try:
         idcheck = User.objects.get(user_id = user_id)
         # 아이디 존재
-       
-        if user_pwd == idcheck.user_pwd:
+        print(idcheck.user_pwd)
+        if encode_pwd == idcheck.user_pwd:
             # print("로그인 성공")
             return Response({'message':'성공','user_id':user_id,'success':True})
         else:
