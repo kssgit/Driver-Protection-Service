@@ -3,10 +3,12 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven { url "https://maven.google.com" } // graphe
     }
     dependencies {
         classpath "com.android.tools.build:gradle:4.2.0"
-//        classpath "org.apache.httpcomponents:httpmime:4.2.3"
+
+        classpath "com.google.gms:google-services:4.3.2" // graphe
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -17,6 +19,7 @@ allprojects {
         google()
         mavenCentral()
         jcenter() // Warning: this repository is going to shut down soon
+        maven { url "https://maven.google.com" } // graphe
     }
 }
 
