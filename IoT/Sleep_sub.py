@@ -30,7 +30,7 @@ class MyMqtt_Sub:
         #AI 설정
         self.detector = dlib.get_frontal_face_detector()
         self.predictor = dlib.shape_predictor(
-            'shape_predictor_68_face_landmarks.dat 경로')
+            './shape_predictor_68_face_landmarks.dat')
         self.img_size = (32, 32)
 
         self.model = load_model('model.h5 경로')
@@ -47,12 +47,13 @@ class MyMqtt_Sub:
         print("connect.." + str(rc))
         if rc == 0:
             img_data = client.subscribe("mydata/img")
-            Co2_data = client.subscribe("mydata/Co2")
+            # Co2_data = client.subscribe("mydata/Co2")
         else:
             print("연결실패")
 
     def on_message(self, client, userdata, msg):
 
+        # 이미지인지 Co2인지 확인
         myval = msg.payload.decode("utf-8")
 
         print(myval)
@@ -60,7 +61,7 @@ class MyMqtt_Sub:
 
         # 움직임 탐지 방식 => 원본 이미지와 새로운 이미지 사이의 달라진 픽셀 측정
         # 첫 이미지를 원본 이미지로??? 아니면 주기적으로 원본 이미지 수집 => 게이트에서 판별???
-        if myval == 'img_data':
+        if type(myval) == np.ndarray:
             if self.origin_img is None:
                 self.origin_img = cv2.imread('이미지')
             else:
@@ -139,11 +140,14 @@ class MyMqtt_Sub:
 
         self.sleep_gate(self, self.eye_blink, self.motion, self.co2)
 
-    def sleep_gate(self, eye_blink, motion, co2):
+    @staticmethod
+    def sleep_gate(eye_blink, motion, co2):
         if eye_blink == 1 and motion == 1 and co2 == 1:
             print("졸았다!!!!!")
-
-    def mse(self, img, compare_img):
+        else:
+            print("안 졸았다!!!!")
+    @staticmethod
+    def mse(img, compare_img):
         err = np.sum((img.astype("float") - compare_img.astype("float")) ** 2)
         err /= float(img.shape[0] * compare_img.shape[1])
         return err
