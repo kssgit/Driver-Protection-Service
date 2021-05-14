@@ -2,7 +2,6 @@ package com.example.dps;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,10 +11,8 @@ import android.widget.Toast;
 
 import com.example.dps.vo.JoinVo;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.UUID;
 
@@ -26,6 +23,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import androidx.appcompat.app.AppCompatActivity;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -67,6 +65,7 @@ public class JoinActivity extends AppCompatActivity {
 
         // 성별 라디오 버튼 남자로 초기화
         gender.check(R.id.man);
+        rd = findViewById(R.id.man);
         gender.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -86,6 +85,16 @@ public class JoinActivity extends AppCompatActivity {
                 if(user_pwd.getText().toString().length() == 0){
                     Toast.makeText(JoinActivity.this, "비밀번호를 입력하세요", Toast.LENGTH_SHORT).show();
                     user_pwd.requestFocus();
+                    return;
+                }
+                if(name.getText().toString().length() == 0){
+                    Toast.makeText(JoinActivity.this, "이름을 입력하세요", Toast.LENGTH_SHORT).show();
+                    name.requestFocus();
+                    return;
+                }
+                if(user_id.getText().toString().length() == 0){
+                    Toast.makeText(JoinActivity.this, "아이디를 입력하세요", Toast.LENGTH_SHORT).show();
+                    user_id.requestFocus();
                     return;
                 }
                 if(birth.getText().toString().length() == 0){
@@ -114,12 +123,17 @@ public class JoinActivity extends AppCompatActivity {
                     return;
                 }
                 // DB에 해당 내용 저장
-                JoinVo vo = new JoinVo(user_id.getText().toString(),user_pwd.getText().toString(),
-                        birth.getText().toString(),name.getText().toString(),
-                        phone_number.getText().toString(),serial_no1.getText().toString(),
-                        serial_no2.getText().toString(),rd.getText().toString()
-                        ,email.getText().toString()
-                        );
+                JoinVo vo = new JoinVo(
+                        user_id.getText().toString(),
+                        user_pwd.getText().toString(),
+                        birth.getText().toString(),
+                        name.getText().toString(),
+                        phone_number.getText().toString(),
+                        serial_no1.getText().toString(),
+                        serial_no2.getText().toString(),
+                        rd.getText().toString(),
+                        email.getText().toString()
+                );
                 String csrfToken = UUID.randomUUID().toString();
                 Call<ResponseBody> call = retrofitAPI.getJoin(csrfToken,vo);
                 call.enqueue(new Callback<ResponseBody>() {
@@ -162,6 +176,7 @@ public class JoinActivity extends AppCompatActivity {
             public void onClick(View v){
                 user_id.setText("");
                 user_pwd.setText("");
+                name.setText("");
                 birth.setText("");
                 gender.check(R.id.man);
                 phone_number.setText("");
@@ -169,10 +184,6 @@ public class JoinActivity extends AppCompatActivity {
                 serial_no1.setText("");
                 serial_no2.setText("");
 
-                // 인텐트 선언 : 현재 액티비티, 넘어갈 액티비티
-                Intent intent = new Intent(JoinActivity.this, MainActivity.class);
-                // 인텐트 실행
-                startActivity(intent);
             }
         });
     }
