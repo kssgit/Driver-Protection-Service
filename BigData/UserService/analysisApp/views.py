@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import User,Co2,Eye,Emotion
-from .UserSerializer import UserSerializer
+from .UserSerializer import UserSerializer,UserLoginSerializer
 from .UserDataSerializer import Co2Serializer,EmotionSerializer,EyeSerializer
 import json
 # from django.core.context_processors import csrf
@@ -10,10 +10,13 @@ import json
 @api_view(['GET'])
 def userData(request,userid):
     user_id = userid
+    print(type(user_id))
     #사용자의 ID를 가지고 해당 사용자의 데이터 구하기
     co2 = Co2.objects.filter(user_id=user_id)
     eye =Eye.objects.filter(user_id=user_id)
     emotion = Emotion.objects.filter(user_id=user_id)
+    # 전처리
+
     # 구한 데이터 Serializer
     co2Serializer =  Co2Serializer(co2,many=True)
     eyeSerializer = EyeSerializer(eye , many=True)
@@ -33,13 +36,17 @@ def userData(request,userid):
 @api_view(['POST'])
 def createUser(request):
     # 역 직렬화
-    serializer = UserSerializer(data= request.data)
+    print(request.data)
+    serializer = UserSerializer(data = request.data)
     # 사용자 비밀번호 암호화를 해야 하나??
     if(serializer.is_valid()):
+        print("성공")
         serializer.save()
+        return Response({'success':True})
     else:
+        print("실패")
         return Response({'success':False})
-    return Response({'success':True})
+   
 
 
 #사용자 아이디 중복 체크
@@ -56,16 +63,25 @@ def userIdcheck(request,userid):
 # 로그인 
 @api_view(['POST'])
 def login(request):
-    param = json.loads(request.body)
-    user_id = param['user_id']
-    user_pwd = param['user_pwd']
+    # loginSerial = UserLoginSerializer(data = request.data)
+    json_param = json.loads(request.body)
+    # print(json_param)
+    user_id = json_param['user_id']
+    # print("user_id :",user_id)
+    user_pwd = json_param['user_pwd']
+    # print("user_pwd :",user_pwd)
+    
     try:
         idcheck = User.objects.get(user_id = user_id)
         # 아이디 존재
-        if user_pwd == idcheck['user_pwd']:
-            return Response({'user_id':user_id,'success':True})
+       
+        if user_pwd == idcheck.user_pwd:
+            # print("로그인 성공")
+            return Response({'message':'성공','user_id':user_id,'success':True})
         else:
-            return Response( {'message':'비밀번호가 일치하지 않습니다.','success':False})
+            # print("로그인 실패1")
+            return Response( {'message':'비밀번호','success':False})
     except Exception:
-        return Response({'message':'존재하지 않는 아이디','success':False})
+        # print("로그인 실패2")
+        return Response({'message':'아이디','success':False})
 
