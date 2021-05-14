@@ -12,11 +12,18 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             'phone_number',
             'email',
             'gender',
-            'car_kind',
             'serial_no1',
             'serial_no2'
             ]
         
+class UserLoginSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta : 
+        model = User
+        fields = [
+            'user_id',
+            'user_pwd'
+        ]
+
 
     # user_id = param['user_id']
     # user_pwd = param['user_pwd']

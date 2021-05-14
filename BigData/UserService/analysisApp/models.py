@@ -2,13 +2,12 @@ from django.db import models
 
 class User(models.Model) :
     user_id = models.CharField(max_length=50, primary_key=True)
-    user_pwd = models.CharField(max_length=50)
+    user_pwd = models.CharField(max_length=250)
     name = models.CharField(max_length=50)
     birth = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=50)
     email = models.CharField(max_length=50)
     gender = models.CharField(max_length=50)
-    car_kind = models.CharField(max_length=50)
     create_time = models.DateField(auto_now_add=True)
     serial_no1 = models.CharField(max_length=50)
     serial_no2 = models.CharField(max_length=50)
