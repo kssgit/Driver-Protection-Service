@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,34 +11,39 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.design.widget.TabLayout
+        <com.google.android.material.tabs.TabLayout
             android:id="@+id/analysis_tab_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.design.widget.TabItem
+            <com.google.android.material.tabs.TabItem
                 android:id="@+id/total_tab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="종합 분석" />
 
-            <android.support.design.widget.TabItem
+            <com.google.android.material.tabs.TabItem
                 android:id="@+id/co2_tab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="이산화탄소" />
 
-            <android.support.design.widget.TabItem
+            <com.google.android.material.tabs.TabItem
                 android:id="@+id/emotion_tab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="감정" />
 
-            <android.support.design.widget.TabItem
+            <com.google.android.material.tabs.TabItem
                 android:id="@+id/eye_tab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="눈감음" />
-        </android.support.design.widget.TabLayout>
+        </com.google.android.material.tabs.TabLayout>
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/pager_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
     </LinearLayout>
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
