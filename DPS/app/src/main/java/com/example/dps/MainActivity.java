@@ -85,8 +85,8 @@ public class MainActivity extends AppCompatActivity {
                                 // 인텐트 선언 : 현재 액티비티, 넘어갈 액티비티
                                 // 사용자 아이디
                                 String user_id = (String) jsonObj.get("user_id");
-                                
-                                Intent intent = new Intent(MainActivity.this, AnalysisActivity.class);
+                                System.out.println("로그인 성공");
+                                Intent intent = new Intent(MainActivity.this, HomeActivity.class);
                                 // 인텐트 실행
                                 startActivity(intent);
                             }else{

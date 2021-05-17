@@ -9,14 +9,6 @@ import com.google.android.material.tabs.TabLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
-import org.eclipse.paho.android.service.MqttAndroidClient;
-import org.eclipse.paho.client.mqttv3.IMqttActionListener;
-import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
-import org.eclipse.paho.client.mqttv3.IMqttToken;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-
 
 public class AnalysisActivity extends AppCompatActivity {
 
@@ -26,38 +18,12 @@ public class AnalysisActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private AnalysisPagerAdapter mAnalysisPagerAdapter;
 
-    private MqttAndroidClient mqttAndroidClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_analysis);
-        //mqtt 설정
-        mqttAndroidClient = new MqttAndroidClient(this,"tcp://3.35.174.45:1883", MqttClient.generateClientId());
-        try {
-          IMqttToken token =mqttAndroidClient.connect();
-          token.setActionCallback(new IMqttActionListener() {
-              @Override
-              public void onSuccess(IMqttToken asyncActionToken) {
-                  try {
-                      mqttAndroidClient.subscribe("test", 1, new IMqttMessageListener() {
-                          @Override
-                          public void messageArrived(String topic, MqttMessage message) throws Exception {
-                            System.out.println(message.toString());
-                          }
-                      });
-                  } catch (MqttException e) {
-                      e.printStackTrace();
-                  }
-              }
 
-              @Override
-              public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-
-              }
-          });
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
         // TabLayout과 ViewPager 연결하기
         mContext = getApplicationContext();
         mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
