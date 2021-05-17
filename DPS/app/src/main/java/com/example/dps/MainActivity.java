@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
                                 String user_id = (String) jsonObj.get("user_id");
                                 
                                 Intent intent = new Intent(MainActivity.this, AnalysisActivity.class);
+                                intent.putExtra("user_id", user_id);
                                 // 인텐트 실행
                                 startActivity(intent);
                             }else{

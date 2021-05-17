@@ -53,22 +53,25 @@ public class Co2Fragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     View view;
     BarChart co2chart;
+    String user_id;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_co2, container, false);
-        initView(view);
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            user_id = bundle.getString("user_id"); //Name 받기.
+            System.out.println("Co2Fragment: "+user_id); //확인
+        }
 
+        initView(view);
         return view;
     }
 

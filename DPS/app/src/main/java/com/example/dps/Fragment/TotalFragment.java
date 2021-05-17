@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.dps.R;
 
@@ -46,28 +47,38 @@ public class TotalFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
     }
+
     View view;
     PieChart totalchart;
+
+    // test
+    TextView testview;
+    String user_id;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_total, container, false);
+
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            user_id = bundle.getString("user_id"); //Name 받기.
+            System.out.println("TotalFragment : " + user_id); //확인
+        }
+
         initView(view);
 
         return view;
     }
 
 
+
     public void initView(View v){
         totalchart = (PieChart) v.findViewById(R.id.totalchart);
+        testview = (TextView) v.findViewById(R.id.testView);
+        testview.setText(user_id);
         setPieChart();
     }
 
@@ -79,6 +90,4 @@ public class TotalFragment extends Fragment {
         totalchart.addPieSlice(new PieModel("Work", 35, Color.parseColor("#CDA67F")));
         totalchart.addPieSlice(new PieModel("Eating", 9, Color.parseColor("#FED70E")));
     }
-
-
 }
