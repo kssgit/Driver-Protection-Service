@@ -29,7 +29,7 @@ class MyMqtt_Sub:
         #AI 설정
         self.detector = dlib.get_frontal_face_detector()
         self.predictor = dlib.shape_predictor(
-            'shape_predictor_68_face_landmarks.dat 경로')
+            './shape_predictor_68_face_landmarks.dat')
         self.img_size = (32, 32)
 
         self.model = load_model('C:/Users/s_csmscox/jupyterSave/eye_blink/eye_blink_CNN_ImgGen1_FT.h5')
@@ -52,26 +52,22 @@ class MyMqtt_Sub:
 
     def on_message(self, client, userdata, msg):
 
-        myval = msg.payload.decode("utf-8")
-
-        # 이미지인지 Co2인지 확인
-        myval = str(msg.payload)
-        print(myval)
-        # print(myval)
-        # print(msg.topic + "----" + str(myval))
+        myval = msg.payload
 
         # 움직임 탐지 방식 => 원본 이미지와 새로운 이미지 사이의 달라진 픽셀 측정
         # 첫 이미지를 원본 이미지로??? 아니면 주기적으로 원본 이미지 수집 => 게이트에서 판별???
 
-        if type(myval) == str:
+        if msg.topic == "mydata/img":
+            myval = np.frombuffer(myval, np.uint8)
             # reshape 해줘야 한다.
-            myval = np.fromstring(myval, np.uint8)
-            myval = myval.reshape(-1, 1)
-            myval = cv2.imdecode(myval, cv2.IMREAD_COLOR)
+            # myval = np.fromstring(myval, np.uint8)
+            myval = myval.reshape(256, 512, 3)
 
             if self.origin_img is None:
                 self.origin_img = myval
                 cv2.imshow('image', self.origin_img)
+                cv2.waitKey()
+                cv2.destroyAllWindows()
             else:
                 compare_img = myval
                 # 이산화탄소 데이터 / 이미지 파일 구분?
@@ -115,6 +111,8 @@ class MyMqtt_Sub:
                     #             (255, 255, 255), 2)
 
                     cv2.imshow('image', compare_img)
+                    cv2.waitKey()
+                    cv2.destroyAllWindows()
 
                     # 두 눈 다 감은 경우 졸음으로 예측
                     if pred_l == 0 and pred_r == 0:
