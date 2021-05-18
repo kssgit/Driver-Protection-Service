@@ -46,7 +46,8 @@ public class EmotionFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
+    View view;
+    String user_id;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +57,12 @@ public class EmotionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_emotion, container, false);
+        view = inflater.inflate(R.layout.fragment_emotion, container, false);
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            user_id = bundle.getString("user_id"); //Name 받기.
+            System.out.println("EmotionFragment: "+user_id); //확인
+        }
+        return view;
     }
 }

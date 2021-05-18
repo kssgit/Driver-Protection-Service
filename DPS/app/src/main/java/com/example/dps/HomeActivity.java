@@ -1,17 +1,12 @@
 package com.example.dps;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -22,6 +17,9 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.util.Locale;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -104,11 +102,15 @@ public class HomeActivity extends AppCompatActivity {
         System.out.println(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>> onCreate tts : " + tts ) ;
 //        tts.setLanguage(Locale.KOREA);
 
+        Intent get_intent = getIntent();
+        String user_id = get_intent.getStringExtra("user_id");
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // 인텐트 선언 : 현재 액티비티, 넘어갈 액티비티
                 Intent intent = new Intent(HomeActivity.this, AnalysisActivity.class);
+                intent.putExtra("user_id", user_id);
                 // 인텐트 실행
                 startActivity(intent);
             }
