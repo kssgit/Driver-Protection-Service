@@ -7,6 +7,8 @@ services:
     environment:
      - MYSQL_ROOT_PASSWORD=test
     volumes:
-     - ./db_volumes:/var/lib/mysql
+     - ./db/conf.d:/etc/mysql/conf.d
+     - ./db/data:/var/lib/mysql
+    privileged: true
     ports:
      - '3306:3306'

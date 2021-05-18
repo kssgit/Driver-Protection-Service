@@ -19,6 +19,7 @@ public class AnalysisActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private AnalysisPagerAdapter mAnalysisPagerAdapter;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
