@@ -86,7 +86,7 @@ DATABASES = {
         'NAME' : 'UserService_db', # 테이블들이 들어갈 데이터베이스 이름
         'USER' : 'root',
         'PASSWORD' : 'test',
-        'HOST' : 'ec2-3-35-174-45.ap-northeast-2.compute.amazonaws.com',
+        'HOST' : 'ec2-13-208-255-135.ap-northeast-3.compute.amazonaws.com',
         'PORT' : '3306'
     }
 }

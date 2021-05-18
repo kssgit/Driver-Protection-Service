@@ -111,7 +111,9 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println(t.toString());
                     }
                 });
-
+                Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                // 인텐트 실행
+                startActivity(intent);
             }
         });
 

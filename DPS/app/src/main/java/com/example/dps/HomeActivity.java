@@ -23,7 +23,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.util.Locale;
 
-public class HomeActivity extends AppCompatActivity implements TextToSpeech.OnInitListener{
+public class HomeActivity extends AppCompatActivity {
 
     private MqttAndroidClient mqttAndroidClient;
     private TextToSpeech tts;
@@ -32,13 +32,33 @@ public class HomeActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private String subMessage;
 
-    public void a() {
-        //tts
-        tts = new TextToSpeech(HomeActivity.this , this);
+    TextToSpeech.OnInitListener listener = new TextToSpeech.OnInitListener() {
+        @RequiresApi(api = Build.VERSION_CODES.R)
+        @Override
+        public void onInit(int status) {
+
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> onInit "+tts) ;
+
+                if (status == TextToSpeech.SUCCESS) {
+                    int result = tts.setLanguage(Locale.KOREA);
+                    if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        Log.e("TTS", "This Language is not supported");
+                    } else {
+                        //                btn_Speak.setEnabled(true);
+                        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> else ") ;
+                        speakOut();
+                    }
+                } else {
+                    Log.e("TTS", "Initilization Failed!");
+                }
+        }
+    };
 
 
-        //mqtt 설정
-        mqttAndroidClient = new MqttAndroidClient(this,"tcp://3.35.174.45:1883", MqttClient.generateClientId());
+    //mqtt 설정
+    public void mqtt() {
+
+        mqttAndroidClient = new MqttAndroidClient(this,"tcp://13.208.255.135:1883", MqttClient.generateClientId());
         try {
             IMqttToken token =mqttAndroidClient.connect();
             token.setActionCallback(new IMqttActionListener() {
@@ -52,6 +72,7 @@ public class HomeActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                 System.out.println(message.toString());
                                 //TTS 변환 및 팝업 activity 실행
                                 subMessage = message.toString();
+
                                 speakOut();
                             }
                         });
@@ -74,7 +95,14 @@ public class HomeActivity extends AppCompatActivity implements TextToSpeech.OnIn
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         button = findViewById(R.id.graph_button);
-
+        //tts
+        //tts = new TextToSpeech(HomeActivity.this , listener);
+        //listener.onInit(0);
+        System.out.println(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>> onCreate listener : " + listener ) ;
+        tts = new TextToSpeech(HomeActivity.this , listener);
+//        tts.setLanguage(Locale.KOREA);
+        System.out.println(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>> onCreate tts : " + tts ) ;
+//        tts.setLanguage(Locale.KOREA);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,20 +113,18 @@ public class HomeActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 startActivity(intent);
             }
         });
+        //mqtt 호출
+        mqtt() ;
 
 
 
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        a();
-    }
-
+    
     @RequiresApi(api = Build.VERSION_CODES.R)
     private void speakOut() {
         CharSequence text = subMessage;
+
+//
         tts.setPitch((float) 0.6);
         tts.setSpeechRate((float) 0.1);
         tts.speak(text,TextToSpeech.QUEUE_FLUSH,null,"id1");
@@ -112,24 +138,22 @@ public class HomeActivity extends AppCompatActivity implements TextToSpeech.OnIn
         super.onDestroy();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.R)
-    @Override
-    public void onInit(int status) {
-        Log.e("status", status+"");
-        Log.e("TextToSpeech", TextToSpeech.SUCCESS+"");
-
-        if (status == TextToSpeech.SUCCESS) {
-            int result = tts.setLanguage(Locale.KOREA);
-            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                Log.e("TTS", "This Language is not supported");
-            } else {
-//                btn_Speak.setEnabled(true);
-                speakOut();
-            }
-        } else {
-            Log.e("TTS", "Initilization Failed!");
-        }
-
-
-    }
+//    @RequiresApi(api = Build.VERSION_CODES.R)
+//    @Override
+//    public void onInit(int status) {
+//        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> onInit tts "+ tts) ;
+//        System.out.println(""+Locale.KOREA);
+//        if (status == TextToSpeech.SUCCESS) {
+//            int result = tts.setLanguage(Locale.KOREA);
+//            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+//                Log.e("TTS", "This Language is not supported");
+//            } else {
+////                btn_Speak.setEnabled(true);
+//                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> else ") ;
+//                speakOut();
+//            }
+//        } else {
+//            Log.e("TTS", "Initilization Failed!");
+//        }
+//    }
 }
