@@ -86,7 +86,8 @@ public class MainActivity extends AppCompatActivity {
                                 // 사용자 아이디
                                 String user_id = (String) jsonObj.get("user_id");
                                 System.out.println("로그인 성공");
-                                Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                                Intent intent = new Intent(MainActivity.this, AnalysisActivity.class);
+                                intent.putExtra("user_id", user_id);
                                 // 인텐트 실행
                                 startActivity(intent);
                             }else{
@@ -111,7 +112,8 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println(t.toString());
                     }
                 });
-                Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                Intent intent = new Intent(MainActivity.this, AnalysisActivity.class);
+                intent.putExtra("user_id", user_id);
                 // 인텐트 실행
                 startActivity(intent);
             }

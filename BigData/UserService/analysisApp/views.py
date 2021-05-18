@@ -11,7 +11,7 @@ import hashlib
 @api_view(['GET'])
 def userData(request,userid):
     user_id = userid
-    print(type(user_id))
+    print(user_id)
     #사용자의 ID를 가지고 해당 사용자의 데이터 구하기
     co2 = Co2.objects.filter(user_id=user_id)
     eye =Eye.objects.filter(user_id=user_id)

@@ -36,7 +36,7 @@ public class AnalysisActivity extends AppCompatActivity {
                 getSupportFragmentManager(), mTabLayout.getTabCount(), user_id);
 
         mViewPager.setAdapter(mAnalysisPagerAdapter);
-
+        mViewPager.setOffscreenPageLimit(mTabLayout.getTabCount());
         // ViewPager의 페이지가 변경될 때 알려주는 리스너
         mViewPager.addOnPageChangeListener(
                 new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
