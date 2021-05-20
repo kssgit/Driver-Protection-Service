@@ -47,7 +47,7 @@ public class TotalFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        System.out.println("두ㅡ번");
+
     }
     
     View view;

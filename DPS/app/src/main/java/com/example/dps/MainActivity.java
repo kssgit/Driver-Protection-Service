@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
                                 intent.putExtra("user_id", user_id);
                                 // 인텐트 실행
                                 startActivity(intent);
+                                finish();
                             }else{
 //                                아이디가 없다
                                 if(message.equals("아이디")){
