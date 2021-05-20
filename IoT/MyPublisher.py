@@ -1,6 +1,10 @@
 import paho.mqtt.publish as publish
 import cv2
 import time
+import json
+
+with open('../key.json', 'r') as f:
+    json_data = json.load(f)
 
 cap = cv2.VideoCapture('C:/Users/s_csmscox/jupyterSave/eye_blink/face5.mp4')
 total_start = time.time()
@@ -14,13 +18,11 @@ while True:
 
     if frame % 6 == 0:
         byteArr = bytearray(img)
-        publish.single("mydata/img", byteArr, hostname="13.208.255.135")
+        publish.single("mydata/img", byteArr, hostname=json_data["EC2"]["IP"])
         print("", frame)
         print(time.time() - start)
         time.sleep(0.2)
 
     frame += 1
-
-
 
 print("total_time :", time.time() - total_start)

@@ -10,15 +10,19 @@ import numpy as np
 from imutils import face_utils
 from matplotlib import pyplot as plt
 from PIL import Image
+import json
 
 
 # 이산화탄소 subscribe
 class MyMqtt_Sub:
     def __init__(self):
+        with open('../key.json', 'r') as f:
+            json_data = json.load(f)
+
         client = mqtt.Client()
         client.on_connect = self.on_connect
         client.on_message = self.on_message
-        client.connect("13.208.255.135", 1883, 60)  # EC2 mqttbroker 주소
+        client.connect(json_data["EC2"]["IP"], json_data["MQTT"]["PORT"], 60)  # EC2 mqttbroker 주소
         ##############################
         #GPIO 설정
         # GPIO.setmode(GPIO.BCM)
@@ -101,7 +105,7 @@ class MyMqtt_Sub:
                     eye_input_l = eye_input_l / 255
 
                     with tf.device('/cpu:0'):
-                        pred_l = self.model.call(tf.convert_to_tensor(eye_input_l), training = False)
+                        pred_l = self.model.call(tf.convert_to_tensor(eye_input_l), training=False)
                     pred_l = np.argmax(pred_l)
 
                     # 오른쪽 눈
@@ -110,7 +114,7 @@ class MyMqtt_Sub:
                     eye_input_r = eye_input_r / 255
 
                     with tf.device('/cpu:0'):
-                        pred_r = self.model.call(tf.convert_to_tensor(eye_input_r), training = False)
+                        pred_r = self.model.call(tf.convert_to_tensor(eye_input_r), training=False)
                     pred_r = np.argmax(pred_r)
 
                     # 두 눈 다 감은 경우 졸음으로 예측
@@ -156,13 +160,17 @@ class MyMqtt_Sub:
                         self.mouse_mean = self.mouse_sum / self.mouse_cnt
                         self.mouse_alert_cnt = 0
 
-                    if self.mouse_alert_cnt > 5:
+                    if self.mouse_alert_cnt > 10:
                         print("Wake up!(yawning)")
 
-        elif myval == 'Co2_data':
-            if myval > 1500:
+        elif msg.topic == 'Co2_data':
+
+            if myval >= 1500:
                 print("Wake Up!(Co2)")
                 self.co2 = 1
+            elif myval >= 2000:
+                # 창문 열린다든지?
+                self.co2 = 2
             else:
                 self.co2 = 0
 
