@@ -8,6 +8,8 @@ import android.widget.EditText;
 
 import com.example.dps.vo.LoginVo;
 
+import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.json.JSONObject;
 
 import java.security.cert.CertificateException;
@@ -35,7 +37,20 @@ public class MainActivity extends AppCompatActivity {
     Retrofit retrofit;
     RetrofitAPI retrofitAPI;
     EditText userid,userpwd;
+    //mqtt
+    private String pubMessage;
+    private MqttAndroidClient mqttAndroidClient;
+    //mqtt_pub
+    public void mqtt_pub(String user_id){
+        mqttAndroidClient = new MqttAndroidClient(this,"tcp://13.208.255.135:1883", MqttClient.generateClientId());
+        try {
+            pubMessage = user_id;
+            mqttAndroidClient.publish("android/userid", pubMessage.getBytes(), 0 , false );
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +101,9 @@ public class MainActivity extends AppCompatActivity {
                                 // 사용자 아이디
                                 String user_id = (String) jsonObj.get("user_id");
                                 System.out.println("로그인 성공");
+                                //mqtt_pub user_id
+                                mqtt_pub(user_id);
+                                //
                                 Intent intent = new Intent(MainActivity.this, AnalysisActivity.class);
                                 intent.putExtra("user_id", user_id);
                                 // 인텐트 실행

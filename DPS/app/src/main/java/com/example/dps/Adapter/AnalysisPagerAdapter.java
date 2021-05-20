@@ -85,7 +85,7 @@ public class AnalysisPagerAdapter extends FragmentStatePagerAdapter {
                 Bundle co2Bundle = new Bundle();
                 //                co2 확인
                 System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>co2_test:"+co2);
-                bundle.putString("user_id", user_id);
+                co2Bundle.putString("user_id", user_id);
                 co2Fragment.setArguments(co2Bundle); //Name 변수 값 전달. 생략시 받는 쪽에서 null 값으로 받음
                 return co2Fragment;
 
@@ -93,7 +93,7 @@ public class AnalysisPagerAdapter extends FragmentStatePagerAdapter {
                 EmotionFragment emotionFragment = new EmotionFragment();
                 System.out.println("케이스2" + user_id); //확인
                 Bundle emotionBundle = new Bundle();
-                bundle.putString("user_id", user_id);
+                emotionBundle.putString("user_id", user_id);
                 emotionFragment.setArguments(emotionBundle); //Name 변수 값 전달. 생략시 받는 쪽에서 null 값으로 받음
                 return emotionFragment;
 
@@ -101,7 +101,7 @@ public class AnalysisPagerAdapter extends FragmentStatePagerAdapter {
                 EyeFragment eyeFragment = new EyeFragment();
                  System.out.println("케이스3" + user_id); //확인
                  Bundle eyeBundle = new Bundle();
-                 bundle.putString("user_id", user_id);
+                 eyeBundle.putString("user_id", user_id);
                  eyeFragment.setArguments(eyeBundle); //Name 변수 값 전달. 생략시 받는 쪽에서 null 값으로 받음
                  return eyeFragment;
 

@@ -84,7 +84,7 @@ public class AnalysisActivity extends AppCompatActivity {
     };
 
 //  mqtt
-    public void mqtt() {
+    public void mqtt_sub() {
         mqttAndroidClient = new MqttAndroidClient(this,"tcp://13.208.255.135:1883", MqttClient.generateClientId());
         try {
             IMqttToken token =mqttAndroidClient.connect();
@@ -92,7 +92,7 @@ public class AnalysisActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     try {
-                        mqttAndroidClient.subscribe("test", 1, new IMqttMessageListener() {
+                        mqttAndroidClient.subscribe("android/"+user_id, 1, new IMqttMessageListener() {
                             @RequiresApi(api = Build.VERSION_CODES.R)
                             @Override
                             public void messageArrived(String topic, MqttMessage message) throws Exception {
@@ -126,6 +126,10 @@ public class AnalysisActivity extends AppCompatActivity {
         Intent intent = getIntent();
         user_id = intent.getExtras().getString("user_id");
 
+        mContext = getApplicationContext();
+        mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
+        mViewPager = (ViewPager) findViewById(R.id.pager_content);
+
         //Json_data 가져오기
         //  1. user_id를 이용해서 장고에 데이터 요청
         //  2. 해당하는 데이터를 케이스에 따라 보내기
@@ -149,15 +153,13 @@ public class AnalysisActivity extends AppCompatActivity {
                 emotion = (JSONArray) jsonObj.get("Emotion");
                 // Array를 각각의 fragment에 보내는 코드 짜기 (ArrayList???)
                 // TabLayout과 ViewPager 연결하기
-                mContext = getApplicationContext();
-                mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
-                mViewPager = (ViewPager) findViewById(R.id.pager_content);
+
                 mAnalysisPagerAdapter = new AnalysisPagerAdapter(
                         getSupportFragmentManager(), mTabLayout.getTabCount(), user_id,co2,emotion,eye);
 //
                 mViewPager.setAdapter(mAnalysisPagerAdapter);
                 mViewPager.setOffscreenPageLimit(mTabLayout.getTabCount());
-//        // ViewPager의 페이지가 변경될 때 알려주는 리스너
+       // ViewPager의 페이지가 변경될 때 알려주는 리스너
                 mViewPager.addOnPageChangeListener(
                         new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
 
@@ -192,7 +194,7 @@ public class AnalysisActivity extends AppCompatActivity {
 
 
         //mqtt 호출
-        mqtt() ;
+        mqtt_sub() ;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.R)

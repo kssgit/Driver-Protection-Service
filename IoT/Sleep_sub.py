@@ -53,6 +53,7 @@ class MyMqtt_Sub:
         self.mouse_mean = 0
         self.mouse_alert_cnt = 0
 
+        self.user_id = None
         ###########################
         client.loop_forever()
 
@@ -61,6 +62,7 @@ class MyMqtt_Sub:
         if rc == 0:
             img_data = client.subscribe("mydata/img")
             Co2_data = client.subscribe("mydata/Co2")
+            user_id = client.subcribe("android/userid")
         else:
             print("연결실패")
 

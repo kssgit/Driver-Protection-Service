@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import json
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -83,11 +84,11 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': BASE_DIR / 'db.sqlite3',
         'ENGINE' : 'django.db.backends.mysql',
-        'NAME' : 'UserService_db', # 테이블들이 들어갈 데이터베이스 이름
-        'USER' : 'root',
-        'PASSWORD' : 'test',
-        'HOST' : 'ec2-13-208-255-135.ap-northeast-3.compute.amazonaws.com',
-        'PORT' : '3306'
+        'NAME' : '테이블 이름', # 테이블들이 들어갈 데이터베이스 이름
+        'USER' : '아이디',
+        'PASSWORD' : '비번',
+        'HOST' : 'ip주소',
+        'PORT' : '포트'
     }
 }
 
