@@ -112,10 +112,10 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println(t.toString());
                     }
                 });
-                Intent intent = new Intent(MainActivity.this, AnalysisActivity.class);
-                intent.putExtra("user_id", user_id);
-                // 인텐트 실행
-                startActivity(intent);
+//                Intent intent = new Intent(MainActivity.this, AnalysisActivity.class);
+//                intent.putExtra("user_id", user_id);
+//                // 인텐트 실행
+//                startActivity(intent);
             }
         });
 
