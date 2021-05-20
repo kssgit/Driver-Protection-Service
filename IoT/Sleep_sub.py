@@ -10,15 +10,19 @@ import numpy as np
 from imutils import face_utils
 from matplotlib import pyplot as plt
 from PIL import Image
+import json
 
 
 # 이산화탄소 subscribe
 class MyMqtt_Sub:
     def __init__(self):
+        with open('../key.json', 'r') as f:
+            json_data = json.load(f)
+
         client = mqtt.Client()
         client.on_connect = self.on_connect
         client.on_message = self.on_message
-        client.connect("13.208.255.135", 1883, 60)  # EC2 mqttbroker 주소
+        client.connect(json_data["EC2"]["IP"], json_data["MQTT"]["PORT"], 60)  # EC2 mqttbroker 주소
         ##############################
         #GPIO 설정
         # GPIO.setmode(GPIO.BCM)
@@ -59,8 +63,9 @@ class MyMqtt_Sub:
     def on_connect(self, client, userdata, flags, rc):
         print("connect.." + str(rc))
         if rc == 0:
-            img_data = client.subscribe("mydata/img")
-            Co2_data = client.subscribe("mydata/Co2")
+            img_data = client.subscribe("IoT/img")
+            Co2_data = client.subscribe("IoT/Co2")
+            user_id = client.subscribe("Android/user_id")
         else:
             print("연결실패")
 
@@ -69,16 +74,12 @@ class MyMqtt_Sub:
         # start = time.time()
         self.frame += 1
 
-        myval = msg.payload
-
-        # 움직임 탐지 방식 => 원본 이미지와 새로운 이미지 사이의 달라진 픽셀 측정
-        # 첫 이미지를 원본 이미지로??? 아니면 주기적으로 원본 이미지 수집 => 게이트에서 판별???
-
         if msg.topic == "mydata/img":
-            myval = np.frombuffer(myval, np.uint8)
-            # reshape 해줘야 한다.
-            # myval = np.fromstring(myval, np.uint8)
+            json_data = json.loads(msg.payload)
+            myval = np.frombuffer(json_data['byteArr'], np.uint8)
             myval = myval.reshape(852, 480, 3)
+
+            print(json_data['user_id'])
 
             if self.origin_img is None:
                 self.origin_img = myval
@@ -101,7 +102,7 @@ class MyMqtt_Sub:
                     eye_input_l = eye_input_l / 255
 
                     with tf.device('/cpu:0'):
-                        pred_l = self.model.call(tf.convert_to_tensor(eye_input_l), training = False)
+                        pred_l = self.model.call(tf.convert_to_tensor(eye_input_l), training=False)
                     pred_l = np.argmax(pred_l)
 
                     # 오른쪽 눈
@@ -110,7 +111,7 @@ class MyMqtt_Sub:
                     eye_input_r = eye_input_r / 255
 
                     with tf.device('/cpu:0'):
-                        pred_r = self.model.call(tf.convert_to_tensor(eye_input_r), training = False)
+                        pred_r = self.model.call(tf.convert_to_tensor(eye_input_r), training=False)
                     pred_r = np.argmax(pred_r)
 
                     # 두 눈 다 감은 경우 졸음으로 예측
@@ -156,13 +157,17 @@ class MyMqtt_Sub:
                         self.mouse_mean = self.mouse_sum / self.mouse_cnt
                         self.mouse_alert_cnt = 0
 
-                    if self.mouse_alert_cnt > 5:
+                    if self.mouse_alert_cnt > 10:
                         print("Wake up!(yawning)")
 
-        elif myval == 'Co2_data':
-            if myval > 1500:
+        elif msg.topic == 'Co2_data':
+
+            if msg.payload >= 1500:
                 print("Wake Up!(Co2)")
                 self.co2 = 1
+            elif msg.payload >= 2000:
+                # 창문 열린다든지?
+                self.co2 = 2
             else:
                 self.co2 = 0
 
