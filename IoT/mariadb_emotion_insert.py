@@ -1,24 +1,26 @@
 import mysql.connector
-try:
-    mydb = mysql.connector.connect(
-        host = "localhost",
-        user = "username", 
-        password = "password",
-        port="포트번호",
-        database = "mydatabase"
-    )
 
-    
-except Except as e :
-    print(f"Error connecting to MariaDB Platform: {e}")
+def mariadb_emotion_insert():
+    try:
+        mydb = mysql.connector.connect(
+            host = "localhost",
+            user = "username", 
+            password = "password",
+            port="포트번호",
+            database = "mydatabase"
+        )
 
-mycursor = mydb.cursor()
+        
+    except Except as e :
+        print(f"Error connecting to MariaDB Platform: {e}")
 
-sql = "INSERT INTO co2 (user_id, emotion) VALUES (%s, %s)"
-val = ("user_id", "emotion")
+    mycursor = mydb.cursor()
 
-mycursor.execute(sql, val)
+    sql = "INSERT INTO co2 (user_id, emotion) VALUES (%s, %s)"
+    val = ("user_id", "emotion")
 
-mydb.commit()
+    mycursor.execute(sql, val)
 
-print(mycursor.rowcount, "record inserted")
+    mydb.commit()
+
+    print(mycursor.rowcount, "record inserted")
