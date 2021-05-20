@@ -3,6 +3,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,vscode,pycharm,jupyternotebooks,java,android,androidstudio,django
 
 .idea/
+key.json
 
 ### Android ###
 # Built application files
