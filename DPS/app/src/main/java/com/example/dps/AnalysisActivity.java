@@ -38,19 +38,16 @@ public class AnalysisActivity extends AppCompatActivity {
     private MqttAndroidClient mqttAndroidClient;
     //tts
     private TextToSpeech tts;
-
     TextToSpeech.OnInitListener listener = new TextToSpeech.OnInitListener() {
         @RequiresApi(api = Build.VERSION_CODES.R)
         @Override
         public void onInit(int status) {
-//            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> onInit "+tts) ;
             if (status == TextToSpeech.SUCCESS) {
                 int result = tts.setLanguage(Locale.KOREA);
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     Log.e("TTS", "This Language is not supported");
                 } else {
-                    //                btn_Speak.setEnabled(true);
-//                    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> else ") ;
+                    //btn_Speak.setEnabled(true);
 //                    speakOut();
                 }
             } else {
@@ -58,9 +55,10 @@ public class AnalysisActivity extends AppCompatActivity {
             }
         }
     };
-//    mqtt
-    public void mqtt() {
 
+
+//  mqtt
+    public void mqtt() {
         mqttAndroidClient = new MqttAndroidClient(this,"tcp://13.208.255.135:1883", MqttClient.generateClientId());
         try {
             IMqttToken token =mqttAndroidClient.connect();
@@ -101,7 +99,7 @@ public class AnalysisActivity extends AppCompatActivity {
         //tts
         tts = new TextToSpeech(this , listener);
 
-//        User_id 가져오기 
+//        User_id 가져오기
         Intent intent = getIntent();
         String user_id = intent.getExtras().getString("user_id");
 
