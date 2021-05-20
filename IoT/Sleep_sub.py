@@ -63,8 +63,9 @@ class MyMqtt_Sub:
     def on_connect(self, client, userdata, flags, rc):
         print("connect.." + str(rc))
         if rc == 0:
-            img_data = client.subscribe("mydata/img")
-            Co2_data = client.subscribe("mydata/Co2")
+            img_data = client.subscribe("IoT/img")
+            Co2_data = client.subscribe("IoT/Co2")
+            user_id = client.subscribe("Android/user_id")
         else:
             print("연결실패")
 
@@ -73,16 +74,12 @@ class MyMqtt_Sub:
         # start = time.time()
         self.frame += 1
 
-        myval = msg.payload
-
-        # 움직임 탐지 방식 => 원본 이미지와 새로운 이미지 사이의 달라진 픽셀 측정
-        # 첫 이미지를 원본 이미지로??? 아니면 주기적으로 원본 이미지 수집 => 게이트에서 판별???
-
         if msg.topic == "mydata/img":
-            myval = np.frombuffer(myval, np.uint8)
-            # reshape 해줘야 한다.
-            # myval = np.fromstring(myval, np.uint8)
+            json_data = json.loads(msg.payload)
+            myval = np.frombuffer(json_data['byteArr'], np.uint8)
             myval = myval.reshape(852, 480, 3)
+
+            print(json_data['user_id'])
 
             if self.origin_img is None:
                 self.origin_img = myval
@@ -165,10 +162,10 @@ class MyMqtt_Sub:
 
         elif msg.topic == 'Co2_data':
 
-            if myval >= 1500:
+            if msg.payload >= 1500:
                 print("Wake Up!(Co2)")
                 self.co2 = 1
-            elif myval >= 2000:
+            elif msg.payload >= 2000:
                 # 창문 열린다든지?
                 self.co2 = 2
             else:
