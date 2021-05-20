@@ -13,6 +13,7 @@ from PIL import Image
 import json
 
 
+
 # 이산화탄소 subscribe
 class MyMqtt_Sub:
     def __init__(self):
