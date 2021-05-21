@@ -11,7 +11,7 @@ from imutils import face_utils
 from matplotlib import pyplot as plt
 from PIL import Image
 import json
-
+import base64
 
 # 이산화탄소 subscribe
 class MyMqtt_Sub:
@@ -77,8 +77,8 @@ class MyMqtt_Sub:
 
         if msg.topic == "mydata/img":
             json_data = json.loads(msg.payload)
-            myval = np.frombuffer(json_data['byteArr'], np.uint8)
-            myval = myval.reshape(852, 480, 3)
+            myval = np.frombuffer(base64.b64decode(json_data['byteArr']), np.uint8)
+            myval = myval.reshape(426, 240, 3)
 
             print(json_data['user_id'])
 
