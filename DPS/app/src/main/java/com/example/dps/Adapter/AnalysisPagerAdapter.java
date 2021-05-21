@@ -33,7 +33,7 @@ public class AnalysisPagerAdapter extends FragmentStatePagerAdapter {
     int emotion_len;
 
     String[] eye_time;
-    int[] eye_amount;
+    int[] eye_issleep;
     int eye_len;
 
     private int mPageCount;
@@ -78,6 +78,23 @@ public class AnalysisPagerAdapter extends FragmentStatePagerAdapter {
                 emotion_time[i] = jsonObject.getString("time");
                 emotion_emotion[i] = jsonObject.getInt("emotion");
                 System.out.println("emotion_amount: : " + emotion_emotion[i]);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        // Eye: Json 형식 String으로 변환
+        eye_len = emotion.length();
+        eye_time = new String[eye_len];
+        eye_issleep = new int[eye_len];
+
+        for(int i=0; i<eye_len; i++) {
+            try {
+                JSONObject  jsonObject = eye.getJSONObject(i);
+                eye_time[i] = jsonObject.getString("time");
+                eye_issleep[i] = jsonObject.getInt("is_sleep");
+                System.out.println("eye_issleep: : " + eye_issleep[i]);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -131,6 +148,8 @@ public class AnalysisPagerAdapter extends FragmentStatePagerAdapter {
 
                  Bundle eyeBundle = new Bundle();
                  eyeBundle.putString("user_id", user_id);
+                 eyeBundle.putStringArray("time", eye_time);
+                 eyeBundle.putIntArray("is_sleep", eye_issleep);
                  eyeFragment.setArguments(eyeBundle); //Name 변수 값 전달. 생략시 받는 쪽에서 null 값으로 받음
                  return eyeFragment;
 
