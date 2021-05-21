@@ -1,7 +1,7 @@
 import mysql.connector
 import json
 
-def maraidb_userid_select():
+def maraidb_userid_select(serial_no1):
     try:
         with open('../key.json')as json_file:
             json_data = json.load(json_file)

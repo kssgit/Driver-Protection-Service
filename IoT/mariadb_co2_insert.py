@@ -1,7 +1,7 @@
-import mysql
+import mysql.connector
 import json
 
-def mariadb_co2_insert():
+def mariadb_co2_insert(user_id,amount):
     try:
         with open('../key.json')as json_file:
             json_data = json.load(json_file)
@@ -20,7 +20,7 @@ def mariadb_co2_insert():
     mycursor = mydb.cursor()
 
     sql = "INSERT INTO co2 (user_id, amount) VALUES (%s, %s)"
-    val = ("user_id", "amount")
+    val = (user_id, amount)
 
     mycursor.execute(sql, val)
 
