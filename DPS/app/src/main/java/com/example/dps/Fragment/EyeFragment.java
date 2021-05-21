@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 
 import com.example.dps.R;
 
+import org.eazegraph.lib.charts.BarChart;
+import org.eazegraph.lib.models.BarModel;
+
 import androidx.fragment.app.Fragment;
 
 /**
@@ -48,7 +51,11 @@ public class EyeFragment extends Fragment {
     }
 
     View view;
+    BarChart eyechart;
     String user_id;
+    String[] time;
+    int[] is_sleep;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,11 +66,38 @@ public class EyeFragment extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_eye, container, false);
         Bundle bundle = getArguments();
+
         if (bundle != null) {
             user_id = bundle.getString("user_id"); //Name 받기.
-            System.out.println("EyeFragment: " + user_id); //확인
+            time = bundle.getStringArray("time");
+            is_sleep = bundle.getIntArray("is_sleep");
+            System.out.println("EyeFragment: "+user_id); //확인
+
+            for(int i=0;i<time.length;i++){
+                System.out.println( (i + 1) + "time : "+time[i]);
+                System.out.println( (i + 1) + "is_sleep" + is_sleep[i]);
+            }
         }
+        initView(view);
         return view;
+    }
+
+    public void initView(View v){
+        eyechart = (BarChart) v.findViewById(R.id.eyechart);
+        setBarChart();
+    }
+
+    // 막대 차트 설정
+    private void setBarChart() {
+
+        eyechart.clearChart();
+
+        for(int i=0;i<time.length;i++){
+            eyechart.addBar(new BarModel(time[i].substring(11, 16), is_sleep[i], 0xFF56B7F1));
+        }
+
+        eyechart.startAnimation();
+
     }
 
 }
