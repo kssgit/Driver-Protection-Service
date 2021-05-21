@@ -259,3 +259,15 @@ zict==2.0.0
 zipp @ file:///tmp/build/80754af9/zipp_1615904174917/work
 zope.event==4.5.0
 zope.interface @ file:///C:/ci/zope.interface_1616357322857/work
+opencv
+paho
+
+paho-mqtt~=1.5.1
+tensorflow~=2.3.0
+opencv-python~=4.5.1.48
+dlib~=19.22.0
+numpy~=1.16.6
+imutils~=0.5.4
+matplotlib~=3.3.2
+pillow~=8.0.1
+rpi~=0.0.1
