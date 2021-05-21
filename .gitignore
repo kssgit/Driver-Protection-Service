@@ -4,7 +4,8 @@
 docker-compose.yaml
 key.json
 .idea/
-.BigData/UserService/UserService/settings.py
+key.json
+
 ### Android ###
 # Built application files
 *.apk

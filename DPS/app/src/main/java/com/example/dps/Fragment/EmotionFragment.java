@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 
 import com.example.dps.R;
 
+import org.eazegraph.lib.charts.BarChart;
+import org.eazegraph.lib.models.BarModel;
+
 import androidx.fragment.app.Fragment;
 
 /**
@@ -46,8 +49,13 @@ public class EmotionFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
     View view;
+    BarChart emotionchart;
     String user_id;
+    String[] time;
+    int[] emotion;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,13 +64,43 @@ public class EmotionFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_emotion, container, false);
         Bundle bundle = getArguments();
+
         if (bundle != null) {
             user_id = bundle.getString("user_id"); //Name 받기.
+            time = bundle.getStringArray("time");
+            emotion = bundle.getIntArray("emotion");
             System.out.println("EmotionFragment: "+user_id); //확인
+
+            for(int i=0;i<time.length;i++){
+                System.out.println( (i + 1) + "time : "+time[i]);
+                System.out.println( (i + 1) + "emotion" + emotion[i]);
+            }
         }
+        initView(view);
         return view;
     }
+
+
+    public void initView(View v){
+        emotionchart = (BarChart) v.findViewById(R.id.emotionchart);
+        setBarChart();
+
+
+    }
+
+    // 막대 차트 설정
+    private void setBarChart() {
+
+        emotionchart.clearChart();
+
+        for(int i=0;i<time.length;i++){
+            emotionchart.addBar(new BarModel(time[i].substring(11, 16), emotion[i], 0xFF56B7F1));
+        }
+
+        emotionchart.startAnimation();
+
+    }
+
 }
