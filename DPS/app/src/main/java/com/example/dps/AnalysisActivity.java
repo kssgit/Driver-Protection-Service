@@ -80,7 +80,7 @@ public class AnalysisActivity extends AppCompatActivity {
     };
 
 //  mqtt
-    public void mqtt() {
+    public void mqtt_sub() {
         mqttAndroidClient = new MqttAndroidClient(this,"tcp://13.208.255.135:1883", MqttClient.generateClientId());
         try {
             IMqttToken token =mqttAndroidClient.connect();
@@ -88,7 +88,7 @@ public class AnalysisActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     try {
-                        mqttAndroidClient.subscribe("test", 1, new IMqttMessageListener() {
+                        mqttAndroidClient.subscribe("android/"+user_id, 1, new IMqttMessageListener() {
                             @RequiresApi(api = Build.VERSION_CODES.R)
                             @Override
                             public void messageArrived(String topic, MqttMessage message) throws Exception {
@@ -121,6 +121,10 @@ public class AnalysisActivity extends AppCompatActivity {
         //User_id 가져오기
         Intent intent = getIntent();
         user_id = intent.getExtras().getString("user_id");
+
+        mContext = getApplicationContext();
+        mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
+        mViewPager = (ViewPager) findViewById(R.id.pager_content);
 
         //Json_data 가져오기
         //  1. user_id를 이용해서 장고에 데이터 요청
@@ -191,7 +195,7 @@ public class AnalysisActivity extends AppCompatActivity {
 
 
         //mqtt 호출
-        mqtt() ;
+        mqtt_sub() ;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.R)

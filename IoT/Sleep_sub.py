@@ -57,6 +57,7 @@ class MyMqtt_Sub:
         self.mouse_mean = 0
         self.mouse_alert_cnt = 0
 
+        self.user_id = None
         ###########################
         client.loop_forever()
 
