@@ -62,7 +62,7 @@ class MyMqtt_Sub:
         if rc == 0:
             img_data = client.subscribe("mydata/img")
             Co2_data = client.subscribe("mydata/Co2")
-            user_id = client.subcribe("android/userid")
+            # user_id = client.subcribe("android/userid")
         else:
             print("연결실패")
 
