@@ -166,7 +166,7 @@ class MyMqtt_Sub:
             if msg.payload >= 1500:
                 print("Wake Up!(Co2)")
                 self.co2 = 1
-            elif msg.payload >= 2000:
+            if msg.payload >= 2000:
                 # 창문 열린다든지?
                 self.co2 = 2
             else:

@@ -18,7 +18,7 @@ while True:
 
     if frame % 6 == 0:
         byteArr = bytearray(img)
-        MQTT_MSG = json.dumps({"byteArr": byteArr, "user_id":0})
+        MQTT_MSG = json.dumps({"byteArr": byteArr, "ser":0})
         publish.single("mydata/img", MQTT_MSG, hostname=json_data["EC2"]["IP"])
         print("", frame)
         print(time.time() - start)
