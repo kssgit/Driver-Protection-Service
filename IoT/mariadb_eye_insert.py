@@ -1,5 +1,6 @@
 import mysql.connector
 import json
+
 def mariadb_eye_insert():
     try:
         with open('../key.json')as json_file:
