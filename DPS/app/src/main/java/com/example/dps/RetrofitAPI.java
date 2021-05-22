@@ -9,13 +9,11 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
-
 // GET : csrtoken 필요 X
 // POST : csrtoken 필요
 public interface RetrofitAPI {
 
     public static final String REGIST_URL = "https://13.208.255.135:8000/";
-    //public static final String REGIST_URL = "https://10.0.2.2:8000/";
     @GET("api/userdata/{userid}")
     Call<ResponseBody> getUserdata(@Path("userid") String userid);
 
@@ -32,7 +30,5 @@ public interface RetrofitAPI {
             @Header("X-CSRFTOKEN") String csrftoken,
             @Body JoinVo joinVo
             );
-
-
 
 }

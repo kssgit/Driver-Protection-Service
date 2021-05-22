@@ -1,7 +1,6 @@
 import mysql.connector
 import json
-
-def mariadb_eye_insert():
+def mariadb_eye_insert(user_id,is_sleep):
     try:
         with open('../key.json')as json_file:
             json_data = json.load(json_file)
@@ -20,7 +19,7 @@ def mariadb_eye_insert():
     mycursor = mydb.cursor()
 
     sql = "INSERT INTO eye (user_id, is_sleep) VALUES (%s, %s)"
-    val = ("user_id", "is_sleep")
+    val = (user_id, is_sleep)
 
     mycursor.execute(sql, val)
 

@@ -37,9 +37,11 @@ public class MainActivity extends AppCompatActivity {
     Retrofit retrofit;
     RetrofitAPI retrofitAPI;
     EditText userid,userpwd;
+
     //mqtt
     private String pubMessage;
     private MqttAndroidClient mqttAndroidClient;
+
     //mqtt_pub
     public void mqtt_pub(String user_id){
         mqttAndroidClient = new MqttAndroidClient(this,"tcp://13.208.255.135:1883", MqttClient.generateClientId());
@@ -49,13 +51,13 @@ public class MainActivity extends AppCompatActivity {
         }catch (Exception e){
             e.printStackTrace();
         }
-
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//       retrofit 선언
+        //retrofit 선언
         retrofit = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create()) // converter 선언
                 .baseUrl(retrofitAPI.REGIST_URL)
@@ -67,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         userid=findViewById(R.id.userID);
         userpwd=findViewById(R.id.userPwd);
 
-        //  로그인 버튼 클릭
+        //로그인 버튼 클릭
         login_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
