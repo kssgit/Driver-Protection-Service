@@ -32,6 +32,7 @@ import javax.net.ssl.X509TrustManager;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.viewpager.widget.ViewPager;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
@@ -78,6 +79,13 @@ public class AnalysisActivity extends AppCompatActivity {
             }
         }
     };
+
+    //notification
+    NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "default")
+            .setSmallIcon(R.drawable.app_icon)
+            .setContentTitle("오늘 하루 운전 위험수치 분석 결과")
+            .setContentText("오늘 하루 감정이 격하시네요 ~~ 내일은 좀더 차분한 마음으로 운전하세요")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
 //  mqtt
     public void mqtt_sub() {

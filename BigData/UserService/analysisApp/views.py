@@ -35,6 +35,11 @@ def userData(request,userid):
     return Response(json_list)
 
 
+# 사용자 하루 운전 수치 분석
+@api_view(["GET"]) 
+def one_day_data(request):
+    pass
+
 
 # 회원 가입
 @api_view(['POST'])
