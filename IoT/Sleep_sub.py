@@ -8,9 +8,8 @@ import cv2
 import dlib
 import numpy as np
 from imutils import face_utils
-from matplotlib import pyplot as plt
-from PIL import Image
 import json
+import base64
 
 
 # 이산화탄소 subscribe
@@ -75,12 +74,10 @@ class MyMqtt_Sub:
         # start = time.time()
         self.frame += 1
 
-        if msg.topic == "mydata/img":
+        if msg.topic == "IoT/img":
             json_data = json.loads(msg.payload)
-            myval = np.frombuffer(json_data['byteArr'], np.uint8)
-            myval = myval.reshape(852, 480, 3)
-
-            print(json_data['user_id'])
+            myval = np.frombuffer(base64.b64decode(json_data['byteArr']), np.uint8)
+            myval = myval.reshape(426, 240, 3)
 
             if self.origin_img is None:
                 self.origin_img = myval
