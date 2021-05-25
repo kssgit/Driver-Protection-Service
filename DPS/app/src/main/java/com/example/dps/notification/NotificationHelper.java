@@ -18,8 +18,6 @@ import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
 import com.example.dps.DayDriveRiskActivity;
-import com.example.dps.FirstAuthActivity;
-import com.example.dps.NotificationActivity;
 import com.example.dps.R;
 
 import java.util.Calendar;
@@ -90,9 +88,9 @@ public class NotificationHelper {
     }
 
     public void createNotification(String workName) {
-        // 클릭 시 NotificationActivity 호출
+        // 클릭 시 DayDriveRiskActivity 호출
         Intent intent = new Intent(mContext, DayDriveRiskActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT); // 대기열에 이미 있다면 NotificationActivity 아닌 앱 활성화
+        intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT); // 대기열에 이미 있다면 DayDriveRiskActivity 아닌 앱 활성화
         intent.setAction(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
 

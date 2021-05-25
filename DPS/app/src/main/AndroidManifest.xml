@@ -23,7 +23,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DPS">
         <activity android:name=".DayDriveRiskActivity"></activity>
-        <activity android:name=".NotificationActivity" />
 
         <meta-data
             android:name="android.max_aspect"
