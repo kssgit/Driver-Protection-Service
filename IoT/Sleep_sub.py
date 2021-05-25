@@ -63,9 +63,9 @@ class MyMqtt_Sub:
     def on_connect(self, client, userdata, flags, rc):
         print("connect.." + str(rc))
         if rc == 0:
-            img_data = client.subscribe("IoT/img")
-            Co2_data = client.subscribe("IoT/Co2")
-            user_id = client.subscribe("Android/user_id")
+            client.subscribe("Sleep/img")
+            client.subscribe("Sleep/Co2")
+            client.subscribe("Android/user_id")
         else:
             print("연결실패")
 
@@ -74,7 +74,7 @@ class MyMqtt_Sub:
         # start = time.time()
         self.frame += 1
 
-        if msg.topic == "IoT/img":
+        if msg.topic == "Sleep/img":
             json_data = json.loads(msg.payload)
             myval = np.frombuffer(base64.b64decode(json_data['byteArr']), np.uint8)
             myval = myval.reshape(426, 240, 3)
@@ -158,7 +158,7 @@ class MyMqtt_Sub:
                     if self.mouse_alert_cnt > 10:
                         print("Wake up!(yawning)")
 
-        elif msg.topic == 'Co2_data':
+        elif msg.topic == 'Sleep/Co2':
 
             if msg.payload >= 1500:
                 print("Wake Up!(Co2)")
@@ -169,6 +169,7 @@ class MyMqtt_Sub:
             else:
                 self.co2 = 0
 
+        # 졸음 상태일 시 안드로이드로 값? 전송
         # self.sleep_gate(self, self.eye_blink, self.motion, self.co2)
         # print("time :", time.time() - start)
         print("", self.frame)
@@ -179,12 +180,6 @@ class MyMqtt_Sub:
             print("졸았다!!!!!")
         else:
             print("안 졸았다!!")
-
-    @staticmethod
-    def mse(self, img, compare_img):
-        err = np.sum((img.astype("float") - compare_img.astype("float")) ** 2)
-        err /= float(img.shape[0] * compare_img.shape[1])
-        return err
 
     def crop_eye(self, img, eye_points):
         x1, y1 = np.amin(eye_points, axis=0)
