@@ -89,7 +89,7 @@ public class NotificationHelper {
     }
 
     public void createNotification(String workName) {
-        // 클릭 시 AnalysisActivity 호출
+        // 클릭 시 FirstAuthActivity 호출
         Intent intent = new Intent(mContext, FirstAuthActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT); // 대기열에 이미 있다면 MainActivity가 아닌 앱 활성화
         intent.setAction(Intent.ACTION_MAIN);
