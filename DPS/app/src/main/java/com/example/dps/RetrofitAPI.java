@@ -14,6 +14,8 @@ import retrofit2.http.Path;
 public interface RetrofitAPI {
 
     public static final String REGIST_URL = "https://13.208.255.135:8000/";
+//    public static final String REGIST_URL = "https://10.0.2.2:8000/";
+
     @GET("api/userdata/{userid}")
     Call<ResponseBody> getUserdata(@Path("userid") String userid);
 

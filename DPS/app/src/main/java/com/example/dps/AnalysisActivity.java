@@ -1,14 +1,18 @@
 package com.example.dps;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 
 import com.example.dps.Adapter.AnalysisPagerAdapter;
+import com.example.dps.login.SaveSharedPreference;
 import com.example.dps.notification.Constants;
 import com.example.dps.notification.NotificationHelper;
 import com.example.dps.notification.PreferenceHelper;
@@ -36,6 +40,7 @@ import javax.net.ssl.X509TrustManager;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.viewpager.widget.ViewPager;
 import androidx.work.WorkManager;
 
@@ -55,6 +60,7 @@ public class AnalysisActivity extends AppCompatActivity {
 
     private ViewPager mViewPager;
     private AnalysisPagerAdapter mAnalysisPagerAdapter;
+    Button logout_btn;
     //JsonData
     JSONArray co2;
     JSONArray eye;
@@ -155,9 +161,10 @@ public class AnalysisActivity extends AppCompatActivity {
         mContext = getApplicationContext();
         mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
         mViewPager = (ViewPager) findViewById(R.id.pager_content);
+        logout_btn=findViewById(R.id.logout_btn);
 
         //notification
-        NotificationHelper.createNotificationChannel(getApplicationContext());
+//        NotificationHelper.createNotificationChannel(getApplicationContext());
 
         //Json_data 가져오기
         //  1. user_id를 이용해서 장고에 데이터 요청
@@ -232,7 +239,15 @@ public class AnalysisActivity extends AppCompatActivity {
 
         //notification
         initSwitchLayout(WorkManager.getInstance(getApplicationContext()));
-
+        //로그 아웃
+        logout_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SaveSharedPreference.clearUserName(AnalysisActivity.this);
+                ActivityCompat.finishAffinity(AnalysisActivity.this);
+                System.exit(0);
+            }
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.R)

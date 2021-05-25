@@ -11,6 +11,6 @@ public class InitApplication extends Application {
     public void onCreate() {
         super.onCreate();
         NotificationHelper.createNotificationChannel(getApplicationContext());
-        NotificationHelper.refreshScheduledNotification(getApplicationContext());
+//        NotificationHelper.refreshScheduledNotification(getApplicationContext());
     }
 }

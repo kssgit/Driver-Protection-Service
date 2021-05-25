@@ -22,19 +22,21 @@
         android:roundIcon="@mipmap/ic_main_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DPS">
+        <activity android:name=".DayDriveRiskActivity"></activity>
+        <activity android:name=".NotificationActivity" />
 
         <meta-data
             android:name="android.max_aspect"
             android:value="2.1" />
-        <activity android:name=".FirstAuthActivity">
 
+        <activity android:name=".FirstAuthActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity" />
         <activity android:name=".AnalysisActivity" />
         <activity android:name=".JoinActivity" /> <!-- mqtt -->
         <service android:name="org.eclipse.paho.android.service.MqttService" />

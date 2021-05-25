@@ -17,7 +17,9 @@ import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
+import com.example.dps.DayDriveRiskActivity;
 import com.example.dps.FirstAuthActivity;
+import com.example.dps.NotificationActivity;
 import com.example.dps.R;
 
 import java.util.Calendar;
@@ -32,7 +34,6 @@ public class NotificationHelper {
 
     private Context mContext;
     private static final Integer WORK_A_NOTIFICATION_CODE = 0;
-    private static final Integer WORK_B_NOTIFICATION_CODE = 1;
     NotificationHelper(Context context) {
         mContext = context;
     }
@@ -47,7 +48,7 @@ public class NotificationHelper {
         OneTimeWorkRequest aWorkerOneTimePushRequest = new OneTimeWorkRequest.Builder(WorkerA.class).build();
         // 가장 가까운 알림시각까지 대기 후 실행, 12시간 간격 반복 5분 이내 완료
         PeriodicWorkRequest aWorkerPeriodicPushRequest =
-                new PeriodicWorkRequest.Builder(WorkerA.class, 12, TimeUnit.HOURS, 5, TimeUnit.MINUTES)
+                new PeriodicWorkRequest.Builder(WorkerA.class, 24, TimeUnit.HOURS, 5, TimeUnit.MINUTES)
                         .build();
         try {
             // workerA 정보 조회
@@ -89,9 +90,9 @@ public class NotificationHelper {
     }
 
     public void createNotification(String workName) {
-        // 클릭 시 FirstAuthActivity 호출
-        Intent intent = new Intent(mContext, FirstAuthActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT); // 대기열에 이미 있다면 MainActivity가 아닌 앱 활성화
+        // 클릭 시 NotificationActivity 호출
+        Intent intent = new Intent(mContext, DayDriveRiskActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT); // 대기열에 이미 있다면 NotificationActivity 아닌 앱 활성화
         intent.setAction(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
 
@@ -109,7 +110,7 @@ public class NotificationHelper {
             PendingIntent pendingIntent = PendingIntent.getActivity(mContext, WORK_A_NOTIFICATION_CODE, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
             // Notification 제목, 컨텐츠 설정
-            notificationBuilder.setContentTitle("오늘하루 운전 위험 수치 분석").setContentText("눌러서 확인하세요~~")
+            notificationBuilder.setContentTitle("하루 운전 위험 수치 분석").setContentText("눌러서 확인하세요~~")
                     .setContentIntent(pendingIntent);
 
             if (notificationManager != null) {

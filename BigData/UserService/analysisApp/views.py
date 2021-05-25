@@ -41,6 +41,17 @@ def one_day_data(request):
     pass
 
 
+# 사용자 정보 수정 
+@api_view(["PUT"])
+def user_data_update(request):
+    user_id = request.data['user_id']
+    serial_no1 = request.data['serial_no1']
+    user = User.objects.get(user_id = user_id)
+    user.serial_no1 =serial_no1
+    user.save()
+    return Response({"result":"update"})
+
+
 # 회원 가입
 @api_view(['POST'])
 def createUser(request):
@@ -89,7 +100,7 @@ def login(request):
 
     user_pwd = userpwd.encode()
     encode_pwd = hashlib.sha256(user_pwd).hexdigest()
-    print(encode_pwd)
+    # print(encode_pwd)
 
     try:
         idcheck = User.objects.get(user_id = user_id)
