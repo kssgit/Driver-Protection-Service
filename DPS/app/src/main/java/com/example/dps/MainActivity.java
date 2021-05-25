@@ -4,12 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
+import com.example.dps.login.SaveSharedPreference;
 import com.example.dps.vo.LoginVo;
 
-import org.eclipse.paho.android.service.MqttAndroidClient;
-import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.json.JSONObject;
 
 import java.security.cert.CertificateException;
@@ -37,21 +37,22 @@ public class MainActivity extends AppCompatActivity {
     Retrofit retrofit;
     RetrofitAPI retrofitAPI;
     EditText userid,userpwd;
+    CheckBox auto_login;
 
     //mqtt
-    private String pubMessage;
-    private MqttAndroidClient mqttAndroidClient;
+//    private String pubMessage;
+//    private MqttAndroidClient mqttAndroidClient;
 
     //mqtt_pub
-    public void mqtt_pub(String user_id){
-        mqttAndroidClient = new MqttAndroidClient(this,"tcp://13.208.255.135:1883", MqttClient.generateClientId());
-        try {
-            pubMessage = user_id;
-            mqttAndroidClient.publish("android/userid", pubMessage.getBytes(), 0 , false );
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
+//    public void mqtt_pub(String user_id){
+//        mqttAndroidClient = new MqttAndroidClient(this,"tcp://13.208.255.135:1883", MqttClient.generateClientId());
+//        try {
+//            pubMessage = user_id;
+//            mqttAndroidClient.publish("android/userid", pubMessage.getBytes(), 0 , false );
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
                 .client(getUnsafeOkHttpClient().build())
                 .build();
         retrofitAPI = retrofit.create(RetrofitAPI.class);
-
+        auto_login = findViewById(R.id.auto_login);
         login_button = findViewById(R.id.login_button);
         userid=findViewById(R.id.userID);
         userpwd=findViewById(R.id.userPwd);
@@ -101,11 +102,15 @@ public class MainActivity extends AppCompatActivity {
                             if ( success == true){
                                 // 인텐트 선언 : 현재 액티비티, 넘어갈 액티비티
                                 // 사용자 아이디
+
                                 String user_id = (String) jsonObj.get("user_id");
                                 System.out.println("로그인 성공");
                                 //mqtt_pub user_id
-                                mqtt_pub(user_id);
-                                //
+//                                mqtt_pub(user_id);
+                                //자동 로그인
+                                if (auto_login.isChecked()){
+                                    SaveSharedPreference.setUserID(MainActivity.this, user_id);
+                                }
                                 Intent intent = new Intent(MainActivity.this, AnalysisActivity.class);
                                 intent.putExtra("user_id", user_id);
                                 // 인텐트 실행

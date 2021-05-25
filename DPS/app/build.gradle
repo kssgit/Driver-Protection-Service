@@ -55,5 +55,9 @@ dependencies {
     implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
 
     //notification
-    implementation "com.android.support:support-compat:28.0.0"
+//    implementation "com.android.support:support-compat:28.0.0"
+
+    //work_runtime
+    def work_version = "2.4.0"
+    implementation "androidx.work:work-runtime:$work_version"
 }

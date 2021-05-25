@@ -6,8 +6,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.widget.CompoundButton;
 
 import com.example.dps.Adapter.AnalysisPagerAdapter;
+import com.example.dps.notification.Constants;
+import com.example.dps.notification.NotificationHelper;
+import com.example.dps.notification.PreferenceHelper;
 import com.google.android.material.tabs.TabLayout;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -32,8 +36,9 @@ import javax.net.ssl.X509TrustManager;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
 import androidx.viewpager.widget.ViewPager;
+import androidx.work.WorkManager;
+
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -80,13 +85,30 @@ public class AnalysisActivity extends AppCompatActivity {
         }
     };
 
-    //notification
-    NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "default")
-            .setSmallIcon(R.drawable.app_icon)
-            .setContentTitle("오늘 하루 운전 위험수치 분석 결과")
-            .setContentText("오늘 하루 감정이 격하시네요 ~~ 내일은 좀더 차분한 마음으로 운전하세요")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+    CompoundButton switchActivateNotify;
 
+    // 푸시알림 설정
+    private void initSwitchLayout(final WorkManager workManager) {
+        switchActivateNotify = (CompoundButton) findViewById(R.id.switch_second_notify);
+        switchActivateNotify.setChecked(PreferenceHelper.getBoolean(getApplicationContext(), Constants.SHARED_PREF_NOTIFICATION_KEY));
+        switchActivateNotify.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    boolean isChannelCreated = NotificationHelper.isNotificationChannelCreated(getApplicationContext());
+                    if (isChannelCreated) {
+                        PreferenceHelper.setBoolean(getApplicationContext(), Constants.SHARED_PREF_NOTIFICATION_KEY, true);
+                        NotificationHelper.setScheduledNotification(workManager);
+                    } else {
+                        NotificationHelper.createNotificationChannel(getApplicationContext());
+                    }
+                } else {
+                    PreferenceHelper.setBoolean(getApplicationContext(), Constants.SHARED_PREF_NOTIFICATION_KEY, false);
+                    workManager.cancelAllWork();
+                }
+            }
+        });
+    }
 //  mqtt
     public void mqtt_sub() {
         mqttAndroidClient = new MqttAndroidClient(this,"tcp://13.208.255.135:1883", MqttClient.generateClientId());
@@ -133,6 +155,9 @@ public class AnalysisActivity extends AppCompatActivity {
         mContext = getApplicationContext();
         mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
         mViewPager = (ViewPager) findViewById(R.id.pager_content);
+
+        //notification
+        NotificationHelper.createNotificationChannel(getApplicationContext());
 
         //Json_data 가져오기
         //  1. user_id를 이용해서 장고에 데이터 요청
@@ -204,6 +229,10 @@ public class AnalysisActivity extends AppCompatActivity {
 
         //mqtt 호출
         mqtt_sub() ;
+
+        //notification
+        initSwitchLayout(WorkManager.getInstance(getApplicationContext()));
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.R)
