@@ -5,6 +5,8 @@ from .UserSerializer import UserSerializer,UserLoginSerializer
 from .UserDataSerializer import Co2Serializer,EmotionSerializer,EyeSerializer
 import json
 import hashlib
+import pandas as pd
+from datetime import datetime
 # from django.core.context_processors import csrf
 
 # 회원 운전 위험수치 가져오기
@@ -78,9 +80,9 @@ def login(request):
     json_param = json.loads(request.body)
     # print(json_param)
     user_id = json_param['user_id']
-    # print("user_id :",user_id)
+    print("user_id :",user_id)
     userpwd = json_param['user_pwd']
-    # print("user_pwd :",user_pwd)
+    # print("user_pwd :",userpwd)
 
     user_pwd = userpwd.encode()
     encode_pwd = hashlib.sha256(user_pwd).hexdigest()
@@ -91,12 +93,60 @@ def login(request):
         # 아이디 존재
         print(idcheck.user_pwd)
         if encode_pwd == idcheck.user_pwd:
-            # print("로그인 성공")
+            print("로그인 성공")
             return Response({'message':'성공','user_id':user_id,'success':True})
         else:
             # print("로그인 실패1")
             return Response( {'message':'비밀번호','success':False})
     except Exception:
-        # print("로그인 실패2")
+        print("로그인 실패2")
         return Response({'message':'아이디','success':False})
 
+
+# 회원 운전 위험수치 가져오기
+@api_view(['GET'])
+def test(request, userid):
+    user_id = userid
+    print(user_id)
+
+    # 사용자의 ID를 가지고 해당 사용자의 데이터 구하기
+    co2 = Co2.objects.filter(user_id=user_id)
+    eye = Eye.objects.filter(user_id=user_id)
+    emotion = Emotion.objects.filter(user_id=user_id)
+
+    # 1. co2 전처리
+    co2_time = []
+    co2_amount = []
+    for a in co2:
+        co2_time.append(a.time)
+        co2_amount.append(a.amount)
+    df_Co2 = pd.DataFrame({'time':co2_time, 'amount':co2_amount})
+    print(df_Co2)
+
+    # 1-1. 시간 전처리
+    # 1-1-1. 시간 단위 쪼개기
+    print(df_Co2.info())
+    df_Co2['year'] = df_Co2['time'].dt.year
+    df_Co2['month'] = df_Co2['time'].dt.month
+    df_Co2['day'] = df_Co2['time'].dt.day
+    df_Co2['hour'] = df_Co2['time'].dt.hour
+    df_Co2['minute'] = df_Co2['time'].dt.minute
+    df_Co2['second'] = df_Co2['time'].dt.second
+    print(df_Co2)
+    print(datetime.today())
+    # 1-1-2.
+
+
+    # 구한 데이터 Serializer
+    co2Serializer = Co2Serializer(co2, many=True)
+    eyeSerializer = EyeSerializer(eye, many=True)
+    emotionSerializer = EmotionSerializer(emotion, many=True)
+
+    json_list = {
+        'Co2': co2Serializer.data,
+        'Eye': eyeSerializer.data,
+        'Emotion': emotionSerializer.data,
+        'Test' : df_Co2,
+    }
+
+    return Response(json_list)
