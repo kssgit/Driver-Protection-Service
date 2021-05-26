@@ -117,7 +117,7 @@ public class AnalysisActivity extends AppCompatActivity {
     }
 //  mqtt
     public void mqtt_sub() {
-        mqttAndroidClient = new MqttAndroidClient(this,"tcp://13.208.255.135:1883", MqttClient.generateClientId());
+        mqttAndroidClient = new MqttAndroidClient(this,"tcp://54.180.214.221:1883", MqttClient.generateClientId());
         try {
             IMqttToken token =mqttAndroidClient.connect();
             token.setActionCallback(new IMqttActionListener() {

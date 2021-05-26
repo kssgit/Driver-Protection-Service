@@ -34,7 +34,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class JoinActivity extends AppCompatActivity {
     Button join_action_button, join_reset_button;
-    EditText user_id, user_pwd, name , birth, phone_number, email, serial_no1, serial_no2;
+    EditText user_id, user_pwd, name , birth, phone_number, email, serial_no1;
     RadioGroup gender;
     Retrofit retrofit;
     RetrofitAPI retrofitAPI;
@@ -61,7 +61,6 @@ public class JoinActivity extends AppCompatActivity {
         phone_number = findViewById(R.id.phone_number);
         email = findViewById(R.id.email);
         serial_no1 = findViewById(R.id.serial_no1);
-        serial_no2 = findViewById(R.id.serial_no2);
 
         // 성별 라디오 버튼 남자로 초기화
         gender.check(R.id.man);
@@ -117,11 +116,6 @@ public class JoinActivity extends AppCompatActivity {
                     serial_no1.requestFocus();
                     return;
                 }
-                if(serial_no2.getText().toString().length() == 0){
-                    Toast.makeText(JoinActivity.this, "시리얼 넘버2를 입력하세요", Toast.LENGTH_SHORT).show();
-                    serial_no2.requestFocus();
-                    return;
-                }
                 // DB에 해당 내용 저장
                 JoinVo vo = new JoinVo(
                         user_id.getText().toString(),
@@ -130,7 +124,6 @@ public class JoinActivity extends AppCompatActivity {
                         name.getText().toString(),
                         phone_number.getText().toString(),
                         serial_no1.getText().toString(),
-                        serial_no2.getText().toString(),
                         rd.getText().toString(),
                         email.getText().toString()
                 );
@@ -182,7 +175,6 @@ public class JoinActivity extends AppCompatActivity {
                 phone_number.setText("");
                 email.setText("");
                 serial_no1.setText("");
-                serial_no2.setText("");
 
             }
         });

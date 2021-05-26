@@ -32,7 +32,7 @@ public class WorkerA extends Worker {
         Calendar eventCal = NotificationHelper.getScheduledCalender(Constants.A_NIGHT_EVENT_TIME);
         long nightNotifyMinRange = eventCal.getTimeInMillis();
 
-        eventCal.add(Calendar.MINUTE, Constants.NOTIFICATION_INTERVAL_MINUTE);
+        eventCal.add(Calendar.SECOND, Constants.NOTIFICATION_INTERVAL_SECOND);
         long nightNotifyMaxRange = eventCal.getTimeInMillis();
 
         // 현재 시각이 오후 알림 범위에 해당하는지

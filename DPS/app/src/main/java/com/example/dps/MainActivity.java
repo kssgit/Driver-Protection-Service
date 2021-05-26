@@ -2,13 +2,17 @@ package com.example.dps;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Switch;
 
 import com.example.dps.login.SaveSharedPreference;
 import com.example.dps.vo.LoginVo;
+import com.royrodriguez.transitionbutton.TransitionButton;
+import com.royrodriguez.transitionbutton.utils.WindowUtils;
 
 import org.json.JSONObject;
 
@@ -32,7 +36,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
-    Button login_button;
+    private TransitionButton login_button;
     Button join_button;
     Retrofit retrofit;
     RetrofitAPI retrofitAPI;
@@ -69,12 +73,15 @@ public class MainActivity extends AppCompatActivity {
         login_button = findViewById(R.id.login_button);
         userid=findViewById(R.id.userID);
         userpwd=findViewById(R.id.userPwd);
-
+        //??
+        WindowUtils.makeStatusbarTransparent(this);
+        getSupportActionBar().hide();
+        //
         //로그인 버튼 클릭
         login_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-
+                login_button.startAnimation();
                 String user_id = userid.getText().toString();
                 String user_pwd = userpwd.getText().toString();
 //               CSRF 토큰 생성
@@ -82,8 +89,9 @@ public class MainActivity extends AppCompatActivity {
 //                System.out.println(csrfToken);
                 //파라미터 담기
                 LoginVo vo = new LoginVo(user_id,user_pwd);
-                
+
                 Call<ResponseBody> call = retrofitAPI.getLogin(csrfToken ,vo);
+//                Handler handler = new Handler();
 
                 call.enqueue(new Callback<ResponseBody>() {
                     @Override
@@ -111,18 +119,26 @@ public class MainActivity extends AppCompatActivity {
                                 if (auto_login.isChecked()){
                                     SaveSharedPreference.setUserID(MainActivity.this, user_id);
                                 }
-                                Intent intent = new Intent(MainActivity.this, AnalysisActivity.class);
-                                intent.putExtra("user_id", user_id);
-                                // 인텐트 실행
-                                startActivity(intent);
-                                finish();
+                                login_button.stopAnimation(TransitionButton.StopAnimationStyle.EXPAND, new TransitionButton.OnAnimationStopEndListener() {
+                                    @Override
+                                    public void onAnimationStopEnd() {
+                                        Intent intent = new Intent(MainActivity.this, AnalysisActivity.class);
+                                        intent.putExtra("user_id", user_id);
+                                        // 인텐트 실행
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                });
+
                             }else{
 //                                아이디가 없다
                                 if(message.equals("아이디")){
                                     System.out.println(message+"가 없습니다.");
+                                    login_button.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
                                 }else {
 //                                    비밀번호가 일치하지 않는다.
                                     System.out.println(message+"가 일치하지 않습니다.");
+                                    login_button.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
                                 }
                             }
                             System.out.println(body.string());
@@ -138,10 +154,7 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println(t.toString());
                     }
                 });
-//                Intent intent = new Intent(MainActivity.this, AnalysisActivity.class);
-//                intent.putExtra("user_id", user_id);
-//                // 인텐트 실행
-//                startActivity(intent);
+
             }
         });
 

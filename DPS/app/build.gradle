@@ -60,4 +60,7 @@ dependencies {
     //work_runtime
     def work_version = "2.4.0"
     implementation "androidx.work:work-runtime:$work_version"
+
+    //로그인 버튼
+    implementation 'com.royrodriguez:transitionbutton:0.2.0'
 }
