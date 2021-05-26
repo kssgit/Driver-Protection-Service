@@ -21,7 +21,7 @@ class MyMqtt_Sub:
         client = mqtt.Client()
         client.on_connect = self.on_connect
         client.on_message = self.on_message
-        client.connect(json_data["EC2"]["IP"], json_data["MQTT"]["PORT"], 60)  # EC2 mqttbroker 주소
+        client.connect(json_data["EC2"]["AI_IP"], json_data["MQTT"]["PORT"], 60)  # EC2 mqttbroker 주소
         ##############################
         #GPIO 설정
         # GPIO.setmode(GPIO.BCM)
