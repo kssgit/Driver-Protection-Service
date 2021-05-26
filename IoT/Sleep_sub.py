@@ -12,6 +12,7 @@ import json
 import base64
 
 
+
 # 이산화탄소 subscribe
 class MyMqtt_Sub:
     def __init__(self):
