@@ -18,13 +18,14 @@ public class DayDriveRiskActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_day_drive_risk);
         analysis_page=findViewById(R.id.analysis_page);
+        // 자동 로그인 여부 확인
         if(SaveSharedPreference.getUserID(DayDriveRiskActivity.this).length() == 0) {
             // call Login Activity
             intent = new Intent(DayDriveRiskActivity.this, MainActivity.class);
             startActivity(intent);
             this.finish();
         } else {
-            // Call Next Activity
+            // 자동 로그인 활성화 되어 있다면
             analysis_page.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

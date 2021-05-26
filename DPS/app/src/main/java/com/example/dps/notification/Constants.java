@@ -12,12 +12,12 @@ public class Constants {
 
     // 챌린지 랭킹 시작 시각
 
-    public static final Integer A_NIGHT_EVENT_TIME = 18;
+    public static final Integer A_NIGHT_EVENT_TIME = 17;
 
     // 푸시알림 허용 Interval 시간
     public static final Integer NOTIFICATION_INTERVAL_HOUR = 1;
     // 푸시알림 허용 Interval 분
-    public static final Integer NOTIFICATION_INTERVAL_MINUTE = 3;
+    public static final Integer NOTIFICATION_INTERVAL_MINUTE = 45;
 
 
     // 백그라운드 work Unique 이름
