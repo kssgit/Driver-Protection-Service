@@ -3,6 +3,7 @@ import cv2
 import time
 import json
 import base64
+import PIL.Image as pilimg
 
 with open('../key.json', 'r') as f:
     json_data = json.load(f)
@@ -18,6 +19,7 @@ while True:
         break
 
     img = cv2.resize(img, dsize=(0, 0), fx=0.5, fy=0.5)
+    img = pilimg.fromarray(img)
 
     if frame % 2 == 0:
         byteArr = base64.b64encode(img)

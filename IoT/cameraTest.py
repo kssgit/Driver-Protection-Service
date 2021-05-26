@@ -12,7 +12,7 @@ for i in range(1,4):
     f = open("image%s.jpg1" % i, "rb");
     file = f.read();
     sfile = bytearray(file);
-    publish.single("mydata/CO2", sfile, hostname="172.30.1.56");
+    publish.single("mydata/CO2", sfile, hostname="ip");
     time.sleep(1);
 
 
