@@ -2,7 +2,6 @@ package com.example.dps;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -10,10 +9,6 @@ import android.util.Log;
 
 import com.example.dps.Adapter.AnalysisPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
-
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager.widget.ViewPager;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -25,10 +20,8 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.Locale;
-import java.util.UUID;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -37,6 +30,9 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -84,7 +80,7 @@ public class AnalysisActivity extends AppCompatActivity {
     };
 
 //  mqtt
-    public void mqtt() {
+    public void mqtt_sub() {
         mqttAndroidClient = new MqttAndroidClient(this,"tcp://13.208.255.135:1883", MqttClient.generateClientId());
         try {
             IMqttToken token =mqttAndroidClient.connect();
@@ -92,7 +88,7 @@ public class AnalysisActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     try {
-                        mqttAndroidClient.subscribe("test", 1, new IMqttMessageListener() {
+                        mqttAndroidClient.subscribe("android/"+user_id, 1, new IMqttMessageListener() {
                             @RequiresApi(api = Build.VERSION_CODES.R)
                             @Override
                             public void messageArrived(String topic, MqttMessage message) throws Exception {
@@ -126,6 +122,10 @@ public class AnalysisActivity extends AppCompatActivity {
         Intent intent = getIntent();
         user_id = intent.getExtras().getString("user_id");
 
+        mContext = getApplicationContext();
+        mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
+        mViewPager = (ViewPager) findViewById(R.id.pager_content);
+
         //Json_data 가져오기
         //  1. user_id를 이용해서 장고에 데이터 요청
         //  2. 해당하는 데이터를 케이스에 따라 보내기
@@ -137,62 +137,65 @@ public class AnalysisActivity extends AppCompatActivity {
         retrofitAPI = retrofit.create(RetrofitAPI.class);
         Call<ResponseBody> call = retrofitAPI.getUserdata(user_id);
         call.enqueue(new Callback<ResponseBody>() {
-        @Override
-        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-            try {
-                ResponseBody body = response.body();
-                String jsonstr = body.string();
-                System.out.println(jsonstr);
-                JSONObject jsonObj = new JSONObject(jsonstr);
-                co2 = (JSONArray) jsonObj.get("Co2");
-                eye = (JSONArray) jsonObj.get("Eye");
-                emotion = (JSONArray) jsonObj.get("Emotion");
-                // Array를 각각의 fragment에 보내는 코드 짜기 (ArrayList???)
-                // TabLayout과 ViewPager 연결하기
-                mContext = getApplicationContext();
-                mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
-                mViewPager = (ViewPager) findViewById(R.id.pager_content);
-                mAnalysisPagerAdapter = new AnalysisPagerAdapter(
-                        getSupportFragmentManager(), mTabLayout.getTabCount(), user_id,co2,emotion,eye);
-//
-                mViewPager.setAdapter(mAnalysisPagerAdapter);
-                mViewPager.setOffscreenPageLimit(mTabLayout.getTabCount());
-//        // ViewPager의 페이지가 변경될 때 알려주는 리스너
-                mViewPager.addOnPageChangeListener(
-                        new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    ResponseBody body = response.body();
+                    String jsonstr = body.string();
+                    JSONObject jsonObj = new JSONObject(jsonstr);
+                    co2 = (JSONArray) jsonObj.get("Co2");
+                    eye = (JSONArray) jsonObj.get("Eye");
+                    emotion = (JSONArray) jsonObj.get("Emotion");
 
-                // Tab이 선택 되었을 때 알려주는 리스너
-                mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-                    // Tab이 선택 되었을 때 호출되는 메서드
-                    @Override
-                    public void onTabSelected(TabLayout.Tab tab) {
-                        mViewPager.setCurrentItem(tab.getPosition()); // 해당 탭으로 전환
-                    }
-                    // Tab이 선택되지 않았을 때 호출되는 메서드
-                    @Override
-                    public void onTabUnselected(TabLayout.Tab tab) {
+                    // Array를 각각의 fragment에 보내는 코드 짜기 (ArrayList???)
+                    // TabLayout과 ViewPager 연결하기
+                    mContext = getApplicationContext();
+                    mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
+                    mViewPager = (ViewPager) findViewById(R.id.pager_content);
+                    mAnalysisPagerAdapter = new AnalysisPagerAdapter(
+                            getSupportFragmentManager(), mTabLayout.getTabCount(), user_id,co2,emotion,eye);
 
-                    }
-                    // Tab이 다시 선택되었을 때 호출되는 메서드
-                    @Override
-                    public void onTabReselected(TabLayout.Tab tab) {
+                    mViewPager.setAdapter(mAnalysisPagerAdapter);
+                    mViewPager.setOffscreenPageLimit(mTabLayout.getTabCount());
 
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("JsonObj 오류"); //확인
+                    // ViewPager의 페이지가 변경될 때 알려주는 리스너
+                    mViewPager.addOnPageChangeListener(
+                            new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
+
+                    // Tab이 선택 되었을 때 알려주는 리스너
+                    mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                        // Tab이 선택 되었을 때 호출되는 메서드
+                        @Override
+                        public void onTabSelected(TabLayout.Tab tab) {
+                            mViewPager.setCurrentItem(tab.getPosition()); // 해당 탭으로 전환
+                            System.out.println("계속 나오는건가?");
+                        }
+                        // Tab이 선택되지 않았을 때 호출되는 메서드
+                        @Override
+                        public void onTabUnselected(TabLayout.Tab tab) {
+
+                        }
+                        // Tab이 다시 선택되었을 때 호출되는 메서드
+                        @Override
+                        public void onTabReselected(TabLayout.Tab tab) {
+
+                        }
+                    });
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("JsonObj 오류"); //확인
+                }
             }
-        }
-        @Override
-        public void onFailure(Call<ResponseBody> call, Throwable t) {
-            System.out.println("통신 실패");
-        }
-    });
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                System.out.println("통신 실패");
+            }
+        });
 
 
         //mqtt 호출
-        mqtt() ;
+        mqtt_sub() ;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.R)

@@ -8,9 +8,8 @@ import cv2
 import dlib
 import numpy as np
 from imutils import face_utils
-from matplotlib import pyplot as plt
-from PIL import Image
 import json
+import base64
 
 
 
@@ -58,14 +57,16 @@ class MyMqtt_Sub:
         self.mouse_mean = 0
         self.mouse_alert_cnt = 0
 
+        self.user_id = None
         ###########################
         client.loop_forever()
 
     def on_connect(self, client, userdata, flags, rc):
         print("connect.." + str(rc))
         if rc == 0:
-            img_data = client.subscribe("mydata/img")
-            Co2_data = client.subscribe("mydata/Co2")
+            client.subscribe("Sleep/img")
+            client.subscribe("Sleep/Co2")
+            client.subscribe("Android/user_id")
         else:
             print("연결실패")
 
@@ -74,16 +75,10 @@ class MyMqtt_Sub:
         # start = time.time()
         self.frame += 1
 
-        myval = msg.payload
-
-        # 움직임 탐지 방식 => 원본 이미지와 새로운 이미지 사이의 달라진 픽셀 측정
-        # 첫 이미지를 원본 이미지로??? 아니면 주기적으로 원본 이미지 수집 => 게이트에서 판별???
-
-        if msg.topic == "mydata/img":
-            myval = np.frombuffer(myval, np.uint8)
-            # reshape 해줘야 한다.
-            # myval = np.fromstring(myval, np.uint8)
-            myval = myval.reshape(852, 480, 3)
+        if msg.topic == "Sleep/img":
+            json_data = json.loads(msg.payload)
+            myval = np.frombuffer(base64.b64decode(json_data['byteArr']), np.uint8)
+            myval = myval.reshape(426, 240, 3)
 
             if self.origin_img is None:
                 self.origin_img = myval
@@ -164,17 +159,18 @@ class MyMqtt_Sub:
                     if self.mouse_alert_cnt > 10:
                         print("Wake up!(yawning)")
 
-        elif msg.topic == 'Co2_data':
+        elif msg.topic == 'Sleep/Co2':
 
-            if myval >= 1500:
+            if msg.payload >= 1500:
                 print("Wake Up!(Co2)")
                 self.co2 = 1
-            elif myval >= 2000:
+            elif msg.payload >= 2000:
                 # 창문 열린다든지?
                 self.co2 = 2
             else:
                 self.co2 = 0
 
+        # 졸음 상태일 시 안드로이드로 값? 전송
         # self.sleep_gate(self, self.eye_blink, self.motion, self.co2)
         # print("time :", time.time() - start)
         print("", self.frame)
@@ -185,12 +181,6 @@ class MyMqtt_Sub:
             print("졸았다!!!!!")
         else:
             print("안 졸았다!!")
-
-    @staticmethod
-    def mse(self, img, compare_img):
-        err = np.sum((img.astype("float") - compare_img.astype("float")) ** 2)
-        err /= float(img.shape[0] * compare_img.shape[1])
-        return err
 
     def crop_eye(self, img, eye_points):
         x1, y1 = np.amin(eye_points, axis=0)

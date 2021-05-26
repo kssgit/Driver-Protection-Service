@@ -2,11 +2,12 @@ import paho.mqtt.publish as publish
 import cv2
 import time
 import json
+import base64
 
 with open('../key.json', 'r') as f:
     json_data = json.load(f)
 
-cap = cv2.VideoCapture('C:/Users/s_csmscox/jupyterSave/eye_blink/face5.mp4')
+cap = cv2.VideoCapture('C:/Users/s_csmscox/jupyterSave/eye_blink/face.mp4')
 total_start = time.time()
 frame = 0
 
@@ -16,12 +17,15 @@ while True:
     if not ret:
         break
 
+    img = cv2.resize(img, dsize=(0, 0), fx=0.5, fy=0.5)
+
     if frame % 6 == 0:
-        byteArr = bytearray(img)
-        publish.single("mydata/img", byteArr, hostname=json_data["EC2"]["IP"])
+        byteArr = base64.b64encode(img)
+        MQTT_MSG = json.dumps({"byteArr": byteArr.decode('utf-8'), "user_id":0})
+        publish.single("IoT/img", MQTT_MSG, hostname=json_data["EC2"]["IP"])
         print("", frame)
         print(time.time() - start)
-        time.sleep(0.2)
+        time.sleep(0.1)
 
     frame += 1
 

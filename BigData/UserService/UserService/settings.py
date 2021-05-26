@@ -9,18 +9,21 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import os
 from pathlib import Path
+import json
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+with open(os.path.join(BASE_DIR, 'key.json')) as json_file:
+    json_data = json.loads(json_file.read())
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-3b8bht#w%+*m!sdq)9vkpc7k-ok(@e3gas$!k1rh(vznr0kp)f'
+secret_key = json_data["Django_Server"]
+SECRET_KEY = secret_key["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -78,16 +81,18 @@ WSGI_APPLICATION = 'UserService.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+db = json_data["DB_Server"]
+ip = json_data["EC2"]
 DATABASES = {
     'default': {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': BASE_DIR / 'db.sqlite3',
         'ENGINE' : 'django.db.backends.mysql',
-        'NAME' : 'UserService_db', # 테이블들이 들어갈 데이터베이스 이름
-        'USER' : 'root',
-        'PASSWORD' : 'test',
-        'HOST' : 'ec2-13-208-255-135.ap-northeast-3.compute.amazonaws.com',
-        'PORT' : '3306'
+        'NAME' : db["NAME"], # 테이블들이 들어갈 데이터베이스 이름
+        'USER' : db["USER"],
+        'PASSWORD' :db["PASSWORD"],
+        'HOST' : ip["IP"],
+        'PORT' : db["PORT"]
     }
 }
 

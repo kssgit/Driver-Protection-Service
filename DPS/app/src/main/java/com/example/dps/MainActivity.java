@@ -8,6 +8,8 @@ import android.widget.EditText;
 
 import com.example.dps.vo.LoginVo;
 
+import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.json.JSONObject;
 
 import java.security.cert.CertificateException;
@@ -36,11 +38,26 @@ public class MainActivity extends AppCompatActivity {
     RetrofitAPI retrofitAPI;
     EditText userid,userpwd;
 
+    //mqtt
+    private String pubMessage;
+    private MqttAndroidClient mqttAndroidClient;
+
+    //mqtt_pub
+    public void mqtt_pub(String user_id){
+        mqttAndroidClient = new MqttAndroidClient(this,"tcp://13.208.255.135:1883", MqttClient.generateClientId());
+        try {
+            pubMessage = user_id;
+            mqttAndroidClient.publish("android/userid", pubMessage.getBytes(), 0 , false );
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//       retrofit 선언
+        //retrofit 선언
         retrofit = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create()) // converter 선언
                 .baseUrl(retrofitAPI.REGIST_URL)
@@ -52,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         userid=findViewById(R.id.userID);
         userpwd=findViewById(R.id.userPwd);
 
-        //  로그인 버튼 클릭
+        //로그인 버튼 클릭
         login_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
@@ -86,6 +103,9 @@ public class MainActivity extends AppCompatActivity {
                                 // 사용자 아이디
                                 String user_id = (String) jsonObj.get("user_id");
                                 System.out.println("로그인 성공");
+                                //mqtt_pub user_id
+                                mqtt_pub(user_id);
+                                //
                                 Intent intent = new Intent(MainActivity.this, AnalysisActivity.class);
                                 intent.putExtra("user_id", user_id);
                                 // 인텐트 실행

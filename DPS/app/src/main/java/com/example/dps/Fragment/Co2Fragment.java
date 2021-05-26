@@ -59,18 +59,26 @@ public class Co2Fragment extends Fragment {
     View view;
     BarChart co2chart;
     String user_id;
-
+    String[] time;
+    int[] amount;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_co2, container, false);
         Bundle bundle = getArguments();
+
         if (bundle != null) {
             user_id = bundle.getString("user_id"); //Name 받기.
+            time = bundle.getStringArray("time");
+            amount = bundle.getIntArray("amount");
             System.out.println("Co2Fragment: "+user_id); //확인
-        }
 
+            for(int i=0; i<time.length; i++){
+                System.out.println( (i + 1) + "co2_time : "+time[i]);
+                System.out.println( (i + 1) + "co2_amount" + amount[i]);
+            }
+        }
         initView(view);
         return view;
     }
@@ -87,13 +95,17 @@ public class Co2Fragment extends Fragment {
 
         co2chart.clearChart();
 
+        for(int i=0;i<time.length;i++){
+            co2chart.addBar(new BarModel(time[i].substring(11, 16), amount[i], 0xFF56B7F1));
+        }
+        /*
         co2chart.addBar(new BarModel("12", 10f, 0xFF56B7F1));
         co2chart.addBar(new BarModel("13", 10f, 0xFF56B7F1));
         co2chart.addBar(new BarModel("14", 10f, 0xFF56B7F1));
         co2chart.addBar(new BarModel("15", 20f, 0xFF56B7F1));
         co2chart.addBar(new BarModel("16", 10f, 0xFF56B7F1));
         co2chart.addBar(new BarModel("17", 10f, 0xFF56B7F1));
-
+        */
         co2chart.startAnimation();
 
     }
