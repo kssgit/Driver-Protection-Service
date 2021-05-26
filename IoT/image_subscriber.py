@@ -1,5 +1,6 @@
-import paho.mqtt.client as mqtt;
+import paho.mqtt.client as mqtt
 import PIL.Image as pilimg
+import json
 
 
 def on_connect(client, userdata, flags, rc):
@@ -24,8 +25,11 @@ def on_message(client, userdata, msg):
         print("error!..");
 
 
-mqttClient = mqtt.Client();
+with open('../key.json', 'r') as f:
+    json_data = json.load(f)
+
+mqttClient = mqtt.Client()
 mqttClient.on_connect = on_connect;
 mqttClient.on_message = on_message;
-mqttClient.connect("172.30.1.56", 1883, 60);
+mqttClient.connect(json_data["EC2"]["AI_IP"], json_data["MQTT"]["PORT"], 60);
 mqttClient.loop_forever();

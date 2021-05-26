@@ -10,7 +10,7 @@ import numpy as np
 from imutils import face_utils
 import json
 import base64
-
+import PIL.Image as pilimg
 
 
 # 이산화탄소 subscribe
@@ -72,13 +72,27 @@ class MyMqtt_Sub:
 
     def on_message(self, client, userdata, msg):
 
-        # start = time.time()
-        self.frame += 1
+        start = time.time()
+        # self.frame += 1
 
         if msg.topic == "Sleep/img":
-            json_data = json.loads(msg.payload)
-            myval = np.frombuffer(base64.b64decode(json_data['byteArr']), np.uint8)
-            myval = myval.reshape(426, 240, 3)
+            try:
+                f = open('output.jpg', "wbr")
+                json_data = json.loads(msg.payload)
+
+                f.write(base64.b64decode(json_data['byteArr']))
+                f.close()
+
+                img = pilimg.open('output.jpg')
+                print("Image Received!!")
+            except Exception as e:
+                print("error ", e)
+
+            # json_data = json.loads(msg.payload)
+            # myval = np.frombuffer(base64.b64decode(json_data['byteArr']), np.uint8)
+            # myval = myval.reshape(426, 240, 3)
+
+            myval = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
 
             if self.origin_img is None:
                 self.origin_img = myval
@@ -160,20 +174,20 @@ class MyMqtt_Sub:
                         print("Wake up!(yawning)")
 
         elif msg.topic == 'Sleep/Co2':
-
-            if msg.payload >= 1500:
+            print("Co2 Received!!")
+            json_Co2 = json.loads(msg.payload)
+            myCo2 = int(json_Co2['content'])
+            print(myCo2)
+            if myCo2 >= 2000:
                 print("Wake Up!(Co2)")
                 self.co2 = 1
-            elif msg.payload >= 2000:
-                # 창문 열린다든지?
-                self.co2 = 2
             else:
                 self.co2 = 0
 
         # 졸음 상태일 시 안드로이드로 값? 전송
         # self.sleep_gate(self, self.eye_blink, self.motion, self.co2)
-        # print("time :", time.time() - start)
-        print("", self.frame)
+        print("time :", time.time() - start)
+        # print("", self.frame)
 
     @staticmethod
     def sleep_gate(self, eye_blink, motion, co2):
