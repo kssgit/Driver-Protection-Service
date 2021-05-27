@@ -53,4 +53,17 @@ dependencies {
     //mqtt
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.1'
     implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
+
+    //notification
+//    implementation "com.android.support:support-compat:28.0.0"
+
+    //work_runtime
+    def work_version = "2.4.0"
+    implementation "androidx.work:work-runtime:$work_version"
+
+    //로그인 버튼
+    implementation 'com.royrodriguez:transitionbutton:0.2.0'
+
+    //중복 확인 버튼
+//    implementation 'com.github.ybq:Android-SpinKit:1.4.0'
 }

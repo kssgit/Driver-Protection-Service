@@ -37,6 +37,22 @@ def userData(request,userid):
     return Response(json_list)
 
 
+# 사용자 하루 운전 수치 분석
+@api_view(["GET"]) 
+def one_day_data(request):
+    pass
+
+
+# 사용자 정보 수정 
+@api_view(["PUT"])
+def user_data_update(request):
+    user_id = request.data['user_id']
+    serial_no1 = request.data['serial_no1']
+    user = User.objects.get(user_id = user_id)
+    user.serial_no1 =serial_no1
+    user.save()
+    return Response({"result":"update"})
+
 
 # 회원 가입
 @api_view(['POST'])
@@ -68,9 +84,19 @@ def userIdcheck(request,userid):
     user_id =userid
     try:
         userIdcheck = User.objects.get(user_id=user_id)
-        return Response({'result':'1'})
+        return Response({'result':False})
     except Exception:
-        return Response({'result':'0'})
+        return Response({'result':True})
+
+# 시리얼 번호 중복 체크
+@api_view(['GET'])
+def serial_no_check(request,serial_no1):
+    serial_no1=serial_no1
+    try:
+        serialcheck = User.objects.get(serial_no1=serial_no1)
+        return Response({'result':False})
+    except Exception:
+        return Response({'result':True})
 
 
 # 로그인 
@@ -86,7 +112,7 @@ def login(request):
 
     user_pwd = userpwd.encode()
     encode_pwd = hashlib.sha256(user_pwd).hexdigest()
-    print(encode_pwd)
+    # print(encode_pwd)
 
     try:
         idcheck = User.objects.get(user_id = user_id)

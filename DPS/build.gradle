@@ -7,6 +7,7 @@ buildscript {
         google()
         mavenCentral()
         maven { url "https://maven.google.com" } // graphe
+         //중복 확인 버튼
     }
     dependencies {
         classpath "com.android.tools.build:gradle:4.2.0"
