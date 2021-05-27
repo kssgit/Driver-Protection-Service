@@ -75,8 +75,8 @@ public class MainActivity extends AppCompatActivity {
         userid=findViewById(R.id.userID);
         userpwd=findViewById(R.id.userPwd);
         //??
-        WindowUtils.makeStatusbarTransparent(this);
-        getSupportActionBar().hide();
+//        WindowUtils.makeStatusbarTransparent(this);
+//        getSupportActionBar().hide();
         //
         //로그인 버튼 클릭
         login_button.setOnClickListener(new View.OnClickListener() {

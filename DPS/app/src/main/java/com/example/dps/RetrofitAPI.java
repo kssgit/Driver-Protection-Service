@@ -19,6 +19,9 @@ public interface RetrofitAPI {
     @GET("api/userdata/{userid}")
     Call<ResponseBody> getUserdata(@Path("userid") String userid);
 
+    @GET("api/userdata/{userid}")
+    Call<ResponseBody> getTestdata(@Path("userid") String userid);
+
     @GET("api/userIDcheck/{userid}")
     Call<ResponseBody> getUserIdCheck(@Path("userid") String userid);
 
