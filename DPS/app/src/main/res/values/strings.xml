@@ -9,7 +9,7 @@
     <string name="main_birth_hint">19941022</string>
     <string name="main_phone_number">ex) xxx-xxxx-xxxx</string>
     <string name="main_email">ex) xxx@email.com</string>
-    <string name="main_serial">XXXXXXXX</string>
+    <string name="main_serial">Serial Number</string>
 
     <string name="main_password_hint">Password</string>
 </resources>

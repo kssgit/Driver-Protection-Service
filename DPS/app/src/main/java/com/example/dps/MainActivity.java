@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.example.dps.login.SaveSharedPreference;
 import com.example.dps.vo.LoginVo;
@@ -133,11 +134,15 @@ public class MainActivity extends AppCompatActivity {
                             }else{
 //                                아이디가 없다
                                 if(message.equals("아이디")){
-                                    System.out.println(message+"가 없습니다.");
+//                                    System.out.println(message+"가 없습니다.");
+                                    Toast.makeText(MainActivity.this, message+"가 없습니다.", Toast.LENGTH_SHORT).show();
+                                    userid.requestFocus();
                                     login_button.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
                                 }else {
 //                                    비밀번호가 일치하지 않는다.
-                                    System.out.println(message+"가 일치하지 않습니다.");
+//                                    System.out.println(message+"가 일치하지 않습니다.");
+                                    Toast.makeText(MainActivity.this, message+"가 일치하지 않습니다.", Toast.LENGTH_SHORT).show();
+                                    userpwd.requestFocus();
                                     login_button.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
                                 }
                             }
@@ -149,7 +154,8 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        System.out.println("실패");
+//                        System.out.println("실패");
+                        Toast.makeText(MainActivity.this, "서버와 통신이 원할하지 않습니다.", Toast.LENGTH_SHORT).show();
 
                         System.out.println(t.toString());
                     }

@@ -9,7 +9,6 @@ public class JoinVo {
         this.name = name;
         this.phone_number = phone_number;
         this.serial_no1 = serial_no1;
-
         this.gender = gender;
         this.email = email;
     }

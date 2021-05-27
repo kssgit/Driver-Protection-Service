@@ -5,5 +5,5 @@ urlpatterns = [
     path('createuser/',views.createUser),
     path('login/',views.login),
     path('userIDcheck/<str:userid>',views.userIdcheck),
-
+    path('userSerialcheck/<str:serial_no1>',views.serial_no_check),
 ]

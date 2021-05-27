@@ -19,7 +19,11 @@ public interface RetrofitAPI {
     @GET("api/userdata/{userid}")
     Call<ResponseBody> getUserdata(@Path("userid") String userid);
 
+    @GET("api/userIDcheck/{userid}")
+    Call<ResponseBody> getUserIdCheck(@Path("userid") String userid);
 
+    @GET("api/userSerialcheck/{serial_no1}")
+    Call<ResponseBody> getUserSerialCheck(@Path("serial_no1") String serial_no1);
 
     @POST("api/login/")
     Call<ResponseBody> getLogin(

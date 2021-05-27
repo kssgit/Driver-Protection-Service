@@ -82,9 +82,19 @@ def userIdcheck(request,userid):
     user_id =userid
     try:
         userIdcheck = User.objects.get(user_id=user_id)
-        return Response({'result':'1'})
+        return Response({'result':False})
     except Exception:
-        return Response({'result':'0'})
+        return Response({'result':True})
+
+# 시리얼 번호 중복 체크
+@api_view(['GET'])
+def serial_no_check(request,serial_no1):
+    serial_no1=serial_no1
+    try:
+        serialcheck = User.objects.get(serial_no1=serial_no1)
+        return Response({'result':False})
+    except Exception:
+        return Response({'result':True})
 
 
 # 로그인 

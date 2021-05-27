@@ -63,4 +63,7 @@ dependencies {
 
     //로그인 버튼
     implementation 'com.royrodriguez:transitionbutton:0.2.0'
+
+    //중복 확인 버튼
+//    implementation 'com.github.ybq:Android-SpinKit:1.4.0'
 }
