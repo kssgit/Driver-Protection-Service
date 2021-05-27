@@ -3,6 +3,7 @@ import cv2
 import time
 import json
 import base64
+import PIL.Image as pilimg
 
 with open('../key.json', 'r') as f:
     json_data = json.load(f)
@@ -18,11 +19,12 @@ while True:
         break
 
     img = cv2.resize(img, dsize=(0, 0), fx=0.5, fy=0.5)
+    img = pilimg.fromarray(img)
 
-    if frame % 6 == 0:
+    if frame % 2 == 0:
         byteArr = base64.b64encode(img)
         MQTT_MSG = json.dumps({"byteArr": byteArr.decode('utf-8'), "user_id":0})
-        publish.single("IoT/img", MQTT_MSG, hostname=json_data["EC2"]["IP"])
+        publish.single("Sleep/img", MQTT_MSG, hostname=json_data["EC2"]["AI_IP"])
         print("", frame)
         print(time.time() - start)
         time.sleep(0.1)

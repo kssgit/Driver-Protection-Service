@@ -23,7 +23,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".DayDriveRiskActivity"></activity>
-
+        <activity android:name=".TestActivity"></activity>
         <meta-data
             android:name="android.max_aspect"
             android:value="2.1" />
@@ -37,8 +37,23 @@
         </activity>
         <activity android:name=".MainActivity" />
         <activity android:name=".AnalysisActivity" />
-        <activity android:name=".JoinActivity" /> <!-- mqtt -->
+        <activity android:name=".JoinActivity" /> 
+        <meta-data
+            android:name="android.max_aspect"
+            android:value="2.1" /><!-- mqtt -->
         <service android:name="org.eclipse.paho.android.service.MqttService" />
-    </application>
+    </application> <!-- mqtt -->
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- TTS -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
 </manifest>
