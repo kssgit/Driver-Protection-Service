@@ -11,11 +11,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 
+
 import com.example.dps.Adapter.AnalysisPagerAdapter;
 import com.example.dps.login.SaveSharedPreference;
 import com.example.dps.notification.Constants;
 import com.example.dps.notification.NotificationHelper;
 import com.example.dps.notification.PreferenceHelper;
+import com.github.angads25.toggle.LabeledSwitch;
+import com.github.angads25.toggle.interfaces.OnToggledListener;
 import com.google.android.material.tabs.TabLayout;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -92,15 +95,16 @@ public class AnalysisActivity extends AppCompatActivity {
     };
 
     CompoundButton switchActivateNotify;
-
     // 푸시알림 설정
     private void initSwitchLayout(final WorkManager workManager) {
-        switchActivateNotify = (CompoundButton) findViewById(R.id.switch_second_notify);
-        switchActivateNotify.setChecked(PreferenceHelper.getBoolean(getApplicationContext(), Constants.SHARED_PREF_NOTIFICATION_KEY));
-        switchActivateNotify.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        LabeledSwitch labeledSwitch = findViewById(R.id.switch_second_notify);
+        labeledSwitch.setOn(PreferenceHelper.getBoolean(
+                getApplicationContext(), Constants.SHARED_PREF_NOTIFICATION_KEY
+        ));
+        labeledSwitch.setOnToggledListener(new OnToggledListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
+            public void onSwitched(LabeledSwitch labeledSwitch, boolean isOn) {
+                if (isOn) {
                     boolean isChannelCreated = NotificationHelper.isNotificationChannelCreated(getApplicationContext());
                     if (isChannelCreated) {
                         PreferenceHelper.setBoolean(getApplicationContext(), Constants.SHARED_PREF_NOTIFICATION_KEY, true);
@@ -114,6 +118,29 @@ public class AnalysisActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+//        switchActivateNotify = (CompoundButton) findViewById(R.id.switch_second_notify);
+//        switchActivateNotify.setChecked(PreferenceHelper.getBoolean(
+//                getApplicationContext(), Constants.SHARED_PREF_NOTIFICATION_KEY
+//        ));
+//        switchActivateNotify.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if (isChecked) {
+//                    boolean isChannelCreated = NotificationHelper.isNotificationChannelCreated(getApplicationContext());
+//                    if (isChannelCreated) {
+//                        PreferenceHelper.setBoolean(getApplicationContext(), Constants.SHARED_PREF_NOTIFICATION_KEY, true);
+//                        NotificationHelper.setScheduledNotification(workManager);
+//                    } else {
+//                        NotificationHelper.createNotificationChannel(getApplicationContext());
+//                    }
+//                } else {
+//                    PreferenceHelper.setBoolean(getApplicationContext(), Constants.SHARED_PREF_NOTIFICATION_KEY, false);
+//                    workManager.cancelAllWork();
+//                }
+//            }
+//        });
     }
 //  mqtt
     public void mqtt_sub() {

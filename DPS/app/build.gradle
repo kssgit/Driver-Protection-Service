@@ -63,7 +63,8 @@ dependencies {
 
     //로그인 버튼
     implementation 'com.royrodriguez:transitionbutton:0.2.0'
-
-    //중복 확인 버튼
-//    implementation 'com.github.ybq:Android-SpinKit:1.4.0'
+    //메뉴창
+    implementation "com.github.skydoves:powermenu:2.1.9"
+    //알람 스위치
+    implementation 'com.github.angads25:toggle:1.0.0'
 }
