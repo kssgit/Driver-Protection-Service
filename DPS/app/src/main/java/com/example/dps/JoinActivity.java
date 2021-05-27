@@ -2,6 +2,8 @@ package com.example.dps;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,12 +35,13 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class JoinActivity extends AppCompatActivity {
-    Button join_action_button, join_reset_button;
-    EditText user_id, user_pwd, name , birth, phone_number, email, serial_no1, serial_no2;
+    Button join_action_button, join_reset_button,id_check,serial_check;
+    EditText user_id, user_pwd, name , birth, phone_number, email, serial_no1;
     RadioGroup gender;
     Retrofit retrofit;
     RetrofitAPI retrofitAPI;
     RadioButton rd;
+    Boolean idcheck=false,serialcheck=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,8 +64,109 @@ public class JoinActivity extends AppCompatActivity {
         phone_number = findViewById(R.id.phone_number);
         email = findViewById(R.id.email);
         serial_no1 = findViewById(R.id.serial_no1);
-        serial_no2 = findViewById(R.id.serial_no2);
+        id_check = findViewById(R.id.id_check);
+        serial_check = findViewById(R.id.serial_check);
+        //id 중복 check
+        id_check.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Call<ResponseBody> call = retrofitAPI.getUserIdCheck(user_id.getText().toString());
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        try{
+                            ResponseBody body = response.body();
+                            String jsonstr = body.string();
+                            JSONObject jsonObj = new JSONObject(jsonstr);
+                            idcheck = (boolean)jsonObj.get("result");
+                            if(idcheck){
+                                System.out.println(idcheck);
+                                Toast.makeText(JoinActivity.this, "사용 가능한 ID 입니다", Toast.LENGTH_SHORT).show();
+                                return;
+                            }else{
+                                Toast.makeText(JoinActivity.this, "중복된 ID 입니다", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                        }catch (Exception e){
+                            System.out.println("중복 check error :"+e);
+                        }
+                    }
 
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                    }
+                });
+            }
+        });
+
+        //id 변경시 ischceck false
+        user_id.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                idcheck=false;
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        // serial 중복 check
+        serial_check.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Call<ResponseBody> call = retrofitAPI.getUserSerialCheck(serial_no1.getText().toString());
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        try{
+                            ResponseBody body = response.body();
+                            String jsonstr = body.string();
+                            JSONObject jsonObj = new JSONObject(jsonstr);
+                            serialcheck = (boolean)jsonObj.get("result");
+                            if(serialcheck){
+                                Toast.makeText(JoinActivity.this, "사용 가능한 Serial Number 입니다", Toast.LENGTH_SHORT).show();
+                                return;
+                            }else{
+                                Toast.makeText(JoinActivity.this, "중복된 Serial Number 입니다", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                        }catch (Exception e){
+                            System.out.println("중복 check error :"+e);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                    }
+                });
+            }
+        });
+        // Serial 변경시
+        serial_no1.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                serialcheck=false;
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
         // 성별 라디오 버튼 남자로 초기화
         gender.check(R.id.man);
         rd = findViewById(R.id.man);
@@ -117,9 +221,14 @@ public class JoinActivity extends AppCompatActivity {
                     serial_no1.requestFocus();
                     return;
                 }
-                if(serial_no2.getText().toString().length() == 0){
-                    Toast.makeText(JoinActivity.this, "시리얼 넘버2를 입력하세요", Toast.LENGTH_SHORT).show();
-                    serial_no2.requestFocus();
+                if (!idcheck){
+                    Toast.makeText(JoinActivity.this, "id 중복 check를 하세요", Toast.LENGTH_SHORT).show();
+                    user_id.requestFocus();
+                    return;
+                }
+                if (!serialcheck){
+                    Toast.makeText(JoinActivity.this, "serial 중복 check를 하세요", Toast.LENGTH_SHORT).show();
+                    serial_no1.requestFocus();
                     return;
                 }
                 // DB에 해당 내용 저장
@@ -130,7 +239,6 @@ public class JoinActivity extends AppCompatActivity {
                         name.getText().toString(),
                         phone_number.getText().toString(),
                         serial_no1.getText().toString(),
-                        serial_no2.getText().toString(),
                         rd.getText().toString(),
                         email.getText().toString()
                 );
@@ -139,14 +247,15 @@ public class JoinActivity extends AppCompatActivity {
                 call.enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        ResponseBody bodys = response.body();
+
 //                            string 형채의 json 데이터
                         try {
+                            ResponseBody bodys = response.body();
                             String jsonstr = bodys.string();
                             JSONObject jsonObj = new JSONObject(jsonstr);
                             boolean success = (Boolean) jsonObj.get("success");
                             if (success==true){
-                                System.out.println("유저생성 완료");
+//                                System.out.println("유저생성 완료");
                                 // 인텐트 선언 : 현재 액티비티, 넘어갈 액티비티
                                 Intent intent = new Intent(JoinActivity.this, MainActivity.class);
                                 // 인텐트 실행
@@ -182,7 +291,6 @@ public class JoinActivity extends AppCompatActivity {
                 phone_number.setText("");
                 email.setText("");
                 serial_no1.setText("");
-                serial_no2.setText("");
 
             }
         });

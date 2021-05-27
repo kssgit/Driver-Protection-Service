@@ -1,13 +1,21 @@
 package com.example.dps;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CompoundButton;
 
 import com.example.dps.Adapter.AnalysisPagerAdapter;
+import com.example.dps.login.SaveSharedPreference;
+import com.example.dps.notification.Constants;
+import com.example.dps.notification.NotificationHelper;
+import com.example.dps.notification.PreferenceHelper;
 import com.google.android.material.tabs.TabLayout;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -32,7 +40,10 @@ import javax.net.ssl.X509TrustManager;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.viewpager.widget.ViewPager;
+import androidx.work.WorkManager;
+
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -49,6 +60,7 @@ public class AnalysisActivity extends AppCompatActivity {
 
     private ViewPager mViewPager;
     private AnalysisPagerAdapter mAnalysisPagerAdapter;
+    Button logout_btn;
     //JsonData
     JSONArray co2;
     JSONArray eye;
@@ -79,9 +91,33 @@ public class AnalysisActivity extends AppCompatActivity {
         }
     };
 
+    CompoundButton switchActivateNotify;
+
+    // 푸시알림 설정
+    private void initSwitchLayout(final WorkManager workManager) {
+        switchActivateNotify = (CompoundButton) findViewById(R.id.switch_second_notify);
+        switchActivateNotify.setChecked(PreferenceHelper.getBoolean(getApplicationContext(), Constants.SHARED_PREF_NOTIFICATION_KEY));
+        switchActivateNotify.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    boolean isChannelCreated = NotificationHelper.isNotificationChannelCreated(getApplicationContext());
+                    if (isChannelCreated) {
+                        PreferenceHelper.setBoolean(getApplicationContext(), Constants.SHARED_PREF_NOTIFICATION_KEY, true);
+                        NotificationHelper.setScheduledNotification(workManager);
+                    } else {
+                        NotificationHelper.createNotificationChannel(getApplicationContext());
+                    }
+                } else {
+                    PreferenceHelper.setBoolean(getApplicationContext(), Constants.SHARED_PREF_NOTIFICATION_KEY, false);
+                    workManager.cancelAllWork();
+                }
+            }
+        });
+    }
 //  mqtt
     public void mqtt_sub() {
-        mqttAndroidClient = new MqttAndroidClient(this,"tcp://13.208.255.135:1883", MqttClient.generateClientId());
+        mqttAndroidClient = new MqttAndroidClient(this,"tcp://54.180.214.221:1883", MqttClient.generateClientId());
         try {
             IMqttToken token =mqttAndroidClient.connect();
             token.setActionCallback(new IMqttActionListener() {
@@ -125,6 +161,10 @@ public class AnalysisActivity extends AppCompatActivity {
         mContext = getApplicationContext();
         mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
         mViewPager = (ViewPager) findViewById(R.id.pager_content);
+        logout_btn=findViewById(R.id.logout_btn);
+
+        //notification
+//        NotificationHelper.createNotificationChannel(getApplicationContext());
 
         //Json_data 가져오기
         //  1. user_id를 이용해서 장고에 데이터 요청
@@ -196,6 +236,18 @@ public class AnalysisActivity extends AppCompatActivity {
 
         //mqtt 호출
         mqtt_sub() ;
+
+        //notification
+        initSwitchLayout(WorkManager.getInstance(getApplicationContext()));
+        //로그 아웃
+        logout_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SaveSharedPreference.clearUserName(AnalysisActivity.this);
+                ActivityCompat.finishAffinity(AnalysisActivity.this);
+                System.exit(0);
+            }
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.R)

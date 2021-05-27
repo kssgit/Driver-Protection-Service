@@ -10,6 +10,7 @@ import numpy as np
 from imutils import face_utils
 import json
 import base64
+import PIL.Image as pilimg
 
 
 # 이산화탄소 subscribe
@@ -21,7 +22,7 @@ class MyMqtt_Sub:
         client = mqtt.Client()
         client.on_connect = self.on_connect
         client.on_message = self.on_message
-        client.connect(json_data["EC2"]["IP"], json_data["MQTT"]["PORT"], 60)  # EC2 mqttbroker 주소
+        client.connect(json_data["EC2"]["AI_IP"], json_data["MQTT"]["PORT"], 60)  # EC2 mqttbroker 주소
         ##############################
         #GPIO 설정
         # GPIO.setmode(GPIO.BCM)
@@ -63,21 +64,35 @@ class MyMqtt_Sub:
     def on_connect(self, client, userdata, flags, rc):
         print("connect.." + str(rc))
         if rc == 0:
-            img_data = client.subscribe("IoT/img")
-            Co2_data = client.subscribe("IoT/Co2")
-            user_id = client.subscribe("Android/user_id")
+            client.subscribe("Sleep/img")
+            client.subscribe("Sleep/Co2")
+            client.subscribe("Android/user_id")
         else:
             print("연결실패")
 
     def on_message(self, client, userdata, msg):
 
-        # start = time.time()
-        self.frame += 1
+        start = time.time()
+        # self.frame += 1
 
-        if msg.topic == "IoT/img":
-            json_data = json.loads(msg.payload)
-            myval = np.frombuffer(base64.b64decode(json_data['byteArr']), np.uint8)
-            myval = myval.reshape(426, 240, 3)
+        if msg.topic == "Sleep/img":
+            try:
+                f = open('output.jpg', "wbr")
+                json_data = json.loads(msg.payload)
+
+                f.write(base64.b64decode(json_data['byteArr']))
+                f.close()
+
+                img = pilimg.open('output.jpg')
+                print("Image Received!!")
+            except Exception as e:
+                print("error ", e)
+
+            # json_data = json.loads(msg.payload)
+            # myval = np.frombuffer(base64.b64decode(json_data['byteArr']), np.uint8)
+            # myval = myval.reshape(426, 240, 3)
+
+            myval = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
 
             if self.origin_img is None:
                 self.origin_img = myval
@@ -158,20 +173,21 @@ class MyMqtt_Sub:
                     if self.mouse_alert_cnt > 10:
                         print("Wake up!(yawning)")
 
-        elif msg.topic == 'Co2_data':
-
-            if msg.payload >= 1500:
+        elif msg.topic == 'Sleep/Co2':
+            print("Co2 Received!!")
+            json_Co2 = json.loads(msg.payload)
+            myCo2 = int(json_Co2['content'])
+            print(myCo2)
+            if myCo2 >= 2000:
                 print("Wake Up!(Co2)")
                 self.co2 = 1
-            elif msg.payload >= 2000:
-                # 창문 열린다든지?
-                self.co2 = 2
             else:
                 self.co2 = 0
 
+        # 졸음 상태일 시 안드로이드로 값? 전송
         # self.sleep_gate(self, self.eye_blink, self.motion, self.co2)
-        # print("time :", time.time() - start)
-        print("", self.frame)
+        print("time :", time.time() - start)
+        # print("", self.frame)
 
     @staticmethod
     def sleep_gate(self, eye_blink, motion, co2):
@@ -179,12 +195,6 @@ class MyMqtt_Sub:
             print("졸았다!!!!!")
         else:
             print("안 졸았다!!")
-
-    @staticmethod
-    def mse(self, img, compare_img):
-        err = np.sum((img.astype("float") - compare_img.astype("float")) ** 2)
-        err /= float(img.shape[0] * compare_img.shape[1])
-        return err
 
     def crop_eye(self, img, eye_points):
         x1, y1 = np.amin(eye_points, axis=0)
