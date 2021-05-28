@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 
 
 import com.example.dps.Adapter.AnalysisPagerAdapter;
@@ -17,6 +18,7 @@ import com.example.dps.login.SaveSharedPreference;
 import com.example.dps.notification.Constants;
 import com.example.dps.notification.NotificationHelper;
 import com.example.dps.notification.PreferenceHelper;
+import com.gigamole.navigationtabstrip.NavigationTabStrip;
 import com.github.angads25.toggle.LabeledSwitch;
 import com.github.angads25.toggle.interfaces.OnToggledListener;
 import com.google.android.material.tabs.TabLayout;
@@ -94,7 +96,6 @@ public class AnalysisActivity extends AppCompatActivity {
         }
     };
 
-    CompoundButton switchActivateNotify;
     // 푸시알림 설정
     private void initSwitchLayout(final WorkManager workManager) {
         LabeledSwitch labeledSwitch = findViewById(R.id.switch_second_notify);
@@ -105,6 +106,7 @@ public class AnalysisActivity extends AppCompatActivity {
             @Override
             public void onSwitched(LabeledSwitch labeledSwitch, boolean isOn) {
                 if (isOn) {
+                    Toast.makeText(AnalysisActivity.this, "8시 푸시알람이 켜졌습니다", Toast.LENGTH_SHORT).show();
                     boolean isChannelCreated = NotificationHelper.isNotificationChannelCreated(getApplicationContext());
                     if (isChannelCreated) {
                         PreferenceHelper.setBoolean(getApplicationContext(), Constants.SHARED_PREF_NOTIFICATION_KEY, true);
@@ -113,34 +115,12 @@ public class AnalysisActivity extends AppCompatActivity {
                         NotificationHelper.createNotificationChannel(getApplicationContext());
                     }
                 } else {
+                    Toast.makeText(AnalysisActivity.this, "8시 푸시알람이 꺼졌습니다", Toast.LENGTH_SHORT).show();
                     PreferenceHelper.setBoolean(getApplicationContext(), Constants.SHARED_PREF_NOTIFICATION_KEY, false);
                     workManager.cancelAllWork();
                 }
             }
         });
-
-
-//        switchActivateNotify = (CompoundButton) findViewById(R.id.switch_second_notify);
-//        switchActivateNotify.setChecked(PreferenceHelper.getBoolean(
-//                getApplicationContext(), Constants.SHARED_PREF_NOTIFICATION_KEY
-//        ));
-//        switchActivateNotify.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                if (isChecked) {
-//                    boolean isChannelCreated = NotificationHelper.isNotificationChannelCreated(getApplicationContext());
-//                    if (isChannelCreated) {
-//                        PreferenceHelper.setBoolean(getApplicationContext(), Constants.SHARED_PREF_NOTIFICATION_KEY, true);
-//                        NotificationHelper.setScheduledNotification(workManager);
-//                    } else {
-//                        NotificationHelper.createNotificationChannel(getApplicationContext());
-//                    }
-//                } else {
-//                    PreferenceHelper.setBoolean(getApplicationContext(), Constants.SHARED_PREF_NOTIFICATION_KEY, false);
-//                    workManager.cancelAllWork();
-//                }
-//            }
-//        });
     }
 //  mqtt
     public void mqtt_sub() {
@@ -213,6 +193,10 @@ public class AnalysisActivity extends AppCompatActivity {
                     co2 = (JSONArray) jsonObj.get("Co2");
                     eye = (JSONArray) jsonObj.get("Eye");
                     emotion = (JSONArray) jsonObj.get("Emotion");
+
+                    //네비게이션 바
+//                    final NavigationTabStrip navigationTabStrip = (NavigationTabStrip) findViewById(R.id.navigation_header);
+//                    navigationTabStrip.setTitles("종합", "Co2", "졸음","감정");
 
                     // Array를 각각의 fragment에 보내는 코드 짜기 (ArrayList???)
                     // TabLayout과 ViewPager 연결하기

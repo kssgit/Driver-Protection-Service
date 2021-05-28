@@ -13,7 +13,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             'email',
             'gender',
             'serial_no1',
-            'serial_no2'
             ]
         
 class UserLoginSerializer(serializers.HyperlinkedModelSerializer):
@@ -32,6 +31,4 @@ class UserLoginSerializer(serializers.HyperlinkedModelSerializer):
     # phone_number = param['phone_number']
     # email = param['email']
     # gender = param['gender']
-    # car_kind = param['car_kind']
     # serial_no1 = param['serial_no1']
-    # serial_no2 = param['serial_no2']
