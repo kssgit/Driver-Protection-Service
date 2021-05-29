@@ -74,6 +74,7 @@ class MyMqtt_Sub:
 
         self.user_id = None
         self.result_cnt = 0
+        self.co2_cnt = 0
         ###########################
         client.loop_forever()
 
@@ -91,6 +92,7 @@ class MyMqtt_Sub:
         start = time.time()
         # self.frame += 1
 
+        # 졸음 상태 => boolean 줘서 다른 간섭 안하도록?
         if msg.topic == "Sleep/img":
 
             try:
@@ -104,6 +106,7 @@ class MyMqtt_Sub:
                 print("error ", e)
 
             myval = cv2.imread('output1.jpg')
+            print(int(json_data['user_id']))
 
             # json_data = json.loads(msg.payload)
             # myval = np.frombuffer(base64.b64decode(json_data['byteArr']), np.uint8)
@@ -152,12 +155,12 @@ class MyMqtt_Sub:
                         self.eye_alert_count = 0
                         self.eye_blink = 0
 
-                    # eye_alert_count가 10 초과하면 경고 메세지
-                    if self.eye_alert_count > 10:
-                        # print("Wake up!(eye_blink)")
+                    # eye_alert_count가 10 초과하면 eye_blink = 1
+                    if self.eye_alert_count >= 10:
+                        print("Wake up!(eye_blink)")
                         self.eye_blink = 1
 
-                    # 코 끝 특징점이 기존에 비해 내려가면 고개 내려갔다고 판정?
+                    # 코 끝 특징점이 기존에 비해 내려가면 고개 내려갔다고 판정
                     if self.nose_cnt == 0:
                         self.nose_sum += shapes[33][1]
                         self.nose_cnt += 1
@@ -171,7 +174,8 @@ class MyMqtt_Sub:
                         self.nose_alert_cnt = 0
                         self.nose = 0
 
-                    if self.nose_alert_cnt > 10:
+                    # nose_alert_cnt가 10 초과하면 nose = 1
+                    if self.nose_alert_cnt >= 10:
                         print("Wake up!(movement)")
                         self.nose = 1
 
@@ -191,30 +195,56 @@ class MyMqtt_Sub:
                         self.mouse_alert_cnt = 0
                         self.mouse = 0
 
-                    if self.mouse_alert_cnt > 10:
+                    # mouse_alert_cnt가 10 초과하면 mouse = 1
+                    if self.mouse_alert_cnt >= 10:
                         print("Wake up!(yawning)")
                         self.mouse = 1
 
                 if is_face_exist:
-                    result = self.sleep_gate(self.eye_blink, self.nose, self.mouse)
-                    print(result)
+                    result = self.sleep_gate(self.eye_blink, self.nose, self.mousem, self.co2)
+
+                    # 경고 및 위험 알람을 울릴 때 DB에 졸음 상태 저장
+                    if result == 1:
+                        # 관짝 소년단?
+                        print("위험")
+                    elif result == 2:
+                        # 경고 알림
+                        print("경고")
 
                     # if result > 0 and (self.result_cnt % 5 == 0) and (self.result_cnt != 0):
                     #
-                    #     time_now = datetime.datetime.now()
+                    #     if self.result_cnt == 15:
+                    #         time_now = datetime.datetime.now()
                     #
-                    #     sql = "INSERT INTO analysisApp_eye (user_id_id, is_sleep, time) VALUES (%s, %s, %s)"
-                    #     val = ("him", result, time_now)
+                    #         sql = "INSERT INTO analysisApp_eye (user_id_id, is_sleep, time) VALUES (%s, %s, %s)"
+                    #         val = ("him", result, time_now)
                     #
-                    #     self.cursor.execute(sql, val)
+                    #         self.cursor.execute(sql, val)
                     #
-                    #     self.mydb.commit()
+                    #         self.mydb.commit()
+                    #         # publish.single("android/him", "눈을 뜨세요", hostname=self.json_data["EC2"]["AI_IP"])
+                    #         print(time_now)
+                    #         print("눈을 뜨세요")
+                    #     elif self.result_cnt == 20:
+                    #         time_now = datetime.datetime.now()
                     #
-                    #     if result == 1:
-                    #         if self.result_cnt == 10:
-                    #             publish.single("android/him", "눈을 뜨세요", hostname=self.json_data["EC2"]["AI_IP"])
-                    #         elif self.result_cnt % 20 == 0:
-                    #             publish.single("android/him", "졸면 안돼요", hostname=self.json_data["EC2"]["AI_IP"])
+                    #         sql = "INSERT INTO analysisApp_eye (user_id_id, is_sleep, time) VALUES (%s, %s, %s)"
+                    #         val = ("him", result, time_now)
+                    #
+                    #         self.cursor.execute(sql, val)
+                    #
+                    #         self.mydb.commit()
+                    #         # publish.single("android/him", "졸면 안돼요", hostname=self.json_data["EC2"]["AI_IP"])
+                    #         print(time_now)
+                    #         print("졸면 안돼요")
+                    #
+                    #     # if result == 1:
+                    #     #     if self.result_cnt == 10:
+                    #     #         # publish.single("android/him", "눈을 뜨세요", hostname=self.json_data["EC2"]["AI_IP"])
+                    #     #         print("눈을 뜨세요")
+                    #     #     elif self.result_cnt % 20 == 0:
+                    #     #         # publish.single("android/him", "졸면 안돼요", hostname=self.json_data["EC2"]["AI_IP"])
+                    #     #         print("졸면 안돼요")
                     #
                     #     self.result_cnt += 1
                     #
@@ -228,23 +258,36 @@ class MyMqtt_Sub:
             json_Co2 = json.loads(msg.payload)
             myCo2 = int(json_Co2['content'])
             print(myCo2)
-            if myCo2 >= 2000:
-                print("Wake Up!(Co2)")
-                self.co2 = 1
+
+            if myCo2 >= 1800:
+                self.co2_cnt += 1
             else:
                 self.co2 = 0
+                self.co2_cnt = 0
+
+            if self.co2_cnt > 10:
+                print("Wake Up!(Co2)")
+                self.co2 = 1
 
         # print("time :", time.time() - start)
         # print("", self.frame)
 
-    def sleep_gate(self, eye_blink, mouse, nose):
-        if eye_blink == 1 and nose == 1:
-            return 2    # 경계
-        elif eye_blink == 1:
+    def sleep_gate(self, eye_blink, mouse, nose, co2):
+        if eye_blink == 1:
             return 1    # 졸음
-        elif nose == 1:
-            return 2    # 경계
-        elif mouse == 1:
+
+        cnt = 0
+
+        if nose == 1:
+            cnt += 1
+        if mouse == 1:
+            cnt += 1
+        if co2 == 1:
+            cnt += 1
+
+        if cnt > 1:     # 눈 깜박임을 제외한 조건 2가지 이상 만족 => 졸음
+            return 1    # 졸음
+        elif cnt == 1:  # 눈 깜박임을 제외한 조건 1가지 만족 => 경계
             return 2    # 경계
         else:
             return 0    # 안졸음
