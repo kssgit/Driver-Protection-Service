@@ -30,11 +30,11 @@ while True:
 
     # byteArr = base64.b64encode(img)
 
-    MQTT_MSG = json.dumps({"byteArr": byteArr.decode('utf-8'), "user_id": 0})
+    MQTT_MSG = json.dumps({"byteArr": byteArr.decode('utf-8'), "user_id": frame})
     publish.single("Sleep/img", MQTT_MSG, hostname=json_data["EC2"]["AI_IP"])
     print("", frame)
     print(time.time() - start)
-    time.sleep(0.1)
+    time.sleep(0.05)
 
     frame += 1
 
