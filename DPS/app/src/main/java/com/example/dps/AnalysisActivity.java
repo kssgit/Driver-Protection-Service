@@ -10,9 +10,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 
@@ -46,6 +52,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -65,10 +72,9 @@ public class AnalysisActivity extends AppCompatActivity {
     private String user_id;
     private Context mContext;
     private TabLayout mTabLayout;
-
     private ViewPager mViewPager;
     private AnalysisPagerAdapter mAnalysisPagerAdapter;
-    Button logout_btn;
+    ImageButton img_btn;
     //JsonData
     JSONArray co2;
     JSONArray eye;
@@ -129,8 +135,8 @@ public class AnalysisActivity extends AppCompatActivity {
     }
 //  mqtt
     public void mqtt_sub() {
-//        mqttAndroidClient = new MqttAndroidClient(this,"tcp://54.180.214.221:1883", MqttClient.generateClientId());
-        mqttAndroidClient = new MqttAndroidClient(this,"tcp://13.208.255.135:1883", MqttClient.generateClientId());
+        mqttAndroidClient = new MqttAndroidClient(this,"tcp://54.180.214.221:1883", MqttClient.generateClientId());
+//        mqttAndroidClient = new MqttAndroidClient(this,"tcp://13.208.255.135:1883", MqttClient.generateClientId());
         //알람 mp3 설정
         MediaPlayer player = MediaPlayer.create(this,R.raw.alam);
 
@@ -146,8 +152,8 @@ public class AnalysisActivity extends AppCompatActivity {
                             public void messageArrived(String topic, MqttMessage message) throws Exception {
                                 //TTS 변환 및 팝업 activity 실행
                                 subMessage = message.toString();
-//                                speakOut();
-                                player.start();
+                                speakOut();
+//                                player.start();
                             }
                         });
                     } catch (MqttException e) {
@@ -177,9 +183,10 @@ public class AnalysisActivity extends AppCompatActivity {
         mContext = getApplicationContext();
         mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
         mViewPager = (ViewPager) findViewById(R.id.pager_content);
-        logout_btn=findViewById(R.id.logout_btn);
 
-
+        //메뉴 위젯 등록
+        img_btn =(ImageButton)findViewById(R.id.menu_btn);
+        registerForContextMenu(img_btn);
 
         //Json_data 가져오기
         //  1. user_id를 이용해서 장고에 데이터 요청
@@ -227,7 +234,7 @@ public class AnalysisActivity extends AppCompatActivity {
                         @Override
                         public void onTabSelected(TabLayout.Tab tab) {
                             mViewPager.setCurrentItem(tab.getPosition()); // 해당 탭으로 전환
-                            System.out.println("계속 나오는건가?");
+
                         }
                         // Tab이 선택되지 않았을 때 호출되는 메서드
                         @Override
@@ -258,22 +265,50 @@ public class AnalysisActivity extends AppCompatActivity {
 
         //notification
         initSwitchLayout(WorkManager.getInstance(getApplicationContext()));
-        //로그 아웃
-        logout_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+
+    }
+
+    //menu 선택 이벤트
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater mi = getMenuInflater();
+        if(v == img_btn) {
+            System.out.println("실행");
+            mi.inflate(R.menu.menu, menu);
+        }
+
+    }
+    // menu item 선택 시 실행
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId()){
+            //로그아웃
+            case R.id.logout_btn:
                 SaveSharedPreference.clearUserName(AnalysisActivity.this);
                 ActivityCompat.finishAffinity(AnalysisActivity.this);
                 System.exit(0);
-            }
-        });
+                return true;
+            case R.id.user_update:
+                System.out.println();
+                return true;
+            case R.id.all_data:
+                return true;
+            case R.id.one_day_data:
+
+
+                return true;
+        }
+
+        return false;
     }
+
 
     @RequiresApi(api = Build.VERSION_CODES.R)
     private void speakOut() {
         CharSequence text = subMessage;
-        tts.setPitch((float) 0.6);
-        tts.setSpeechRate((float) 0.1);
+        tts.setPitch((float) 0.3);
+        tts.setSpeechRate((float) 1.0);
         tts.speak(text,TextToSpeech.QUEUE_FLUSH,null,"id1");
     }
 
