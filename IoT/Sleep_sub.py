@@ -95,18 +95,20 @@ class MyMqtt_Sub:
         # 졸음 상태 => boolean 줘서 다른 간섭 안하도록?
         if msg.topic == "Sleep/img":
 
+            payload = None
+
             try:
                 f = open('output1.jpg', "wb")
-                json_data = json.loads(msg.payload)
+                payload = json.loads(msg.payload)
 
-                f.write(base64.b64decode(json_data['byteArr']))
+                f.write(base64.b64decode(payload['byteArr']))
                 f.close()
 
             except Exception as e:
                 print("error ", e)
 
             myval = cv2.imread('output1.jpg')
-            print(int(json_data['user_id']))
+            print(int(payload['user_id']))
 
             # json_data = json.loads(msg.payload)
             # myval = np.frombuffer(base64.b64decode(json_data['byteArr']), np.uint8)
@@ -156,7 +158,7 @@ class MyMqtt_Sub:
                         self.eye_blink = 0
 
                     # eye_alert_count가 10 초과하면 eye_blink = 1
-                    if self.eye_alert_count >= 10:
+                    if self.eye_alert_count >= 20:
                         print("Wake up!(eye_blink)")
                         self.eye_blink = 1
 
@@ -175,7 +177,7 @@ class MyMqtt_Sub:
                         self.nose = 0
 
                     # nose_alert_cnt가 10 초과하면 nose = 1
-                    if self.nose_alert_cnt >= 10:
+                    if self.nose_alert_cnt >= 20:
                         print("Wake up!(movement)")
                         self.nose = 1
 
@@ -196,12 +198,12 @@ class MyMqtt_Sub:
                         self.mouse = 0
 
                     # mouse_alert_cnt가 10 초과하면 mouse = 1
-                    if self.mouse_alert_cnt >= 10:
+                    if self.mouse_alert_cnt >= 20:
                         print("Wake up!(yawning)")
                         self.mouse = 1
 
                 if is_face_exist:
-                    result = self.sleep_gate(self.eye_blink, self.nose, self.mousem, self.co2)
+                    result = self.sleep_gate(self.eye_blink, self.nose, self.mouse, self.co2)
 
                     # 경고 및 위험 알람을 울릴 때 DB에 졸음 상태 저장
                     if result == 1:
@@ -210,6 +212,9 @@ class MyMqtt_Sub:
                     elif result == 2:
                         # 경고 알림
                         print("경고")
+                        # 이산화탄소면 => 창문을 열어주세요
+                    else:
+                        print("안졸음")
 
                     # if result > 0 and (self.result_cnt % 5 == 0) and (self.result_cnt != 0):
                     #
@@ -255,17 +260,17 @@ class MyMqtt_Sub:
 
         elif msg.topic == 'Sleep/Co2':
 
-            json_Co2 = json.loads(msg.payload)
-            myCo2 = int(json_Co2['content'])
-            print(myCo2)
+            payload = json.loads(msg.payload)
+            myco2 = int(payload['content'])
+            print(myco2)
 
-            if myCo2 >= 1800:
+            if myco2 >= 1800:
                 self.co2_cnt += 1
             else:
                 self.co2 = 0
                 self.co2_cnt = 0
 
-            if self.co2_cnt > 10:
+            if self.co2_cnt > 20:
                 print("Wake Up!(Co2)")
                 self.co2 = 1
 
