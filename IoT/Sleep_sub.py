@@ -1,7 +1,5 @@
 import time
-import threading
 import paho.mqtt.client as mqtt
-# import RPi.GPIO as GPIO
 from tensorflow.keras.models import load_model
 import tensorflow as tf
 import cv2
@@ -10,26 +8,42 @@ import numpy as np
 from imutils import face_utils
 import json
 import base64
-
+import PIL.Image as pilimg
+import paho.mqtt.publish as publish
+import datetime
+import mysql.connector
 
 
 # 이산화탄소 subscribe
 class MyMqtt_Sub:
     def __init__(self):
         with open('../key.json', 'r') as f:
-            json_data = json.load(f)
+            self.json_data = json.load(f)
 
         client = mqtt.Client()
         client.on_connect = self.on_connect
         client.on_message = self.on_message
-        client.connect(json_data["EC2"]["AI_IP"], json_data["MQTT"]["PORT"], 60)  # EC2 mqttbroker 주소
+        client.connect(self.json_data["EC2"]["AI_IP"], self.json_data["MQTT"]["PORT"], 60)  # EC2 mqttbroker 주소
         ##############################
-        #GPIO 설정
-        # GPIO.setmode(GPIO.BCM)
-     
+        # DB 설정
+        try:
+            db = self.json_data["DB_Server"]
+            ip = self.json_data["EC2"]
+            self.mydb = mysql.connector.connect(
+                host=ip["IP"],
+                user=db["USER"],
+                password=db["PASSWORD"],
+                port=db["PORT"],
+                database=db["NAME"]
+            )
+            self.cursor = self.mydb.cursor()
+        except Exception as e:
+            print(f"Error connecting to MariaDB Platform: {e}")
+            self.cursor = None
+            self.mydb = None
+
         ############################
-        ############################
-        #AI 설정
+        # AI 설정
         self.detector = dlib.get_frontal_face_detector()
         self.predictor = dlib.shape_predictor(
             './shape_predictor_68_face_landmarks.dat')
@@ -40,9 +54,10 @@ class MyMqtt_Sub:
 
         self.origin_img = None
 
-        self.eye_blink = None
-        self.co2 = None
-        self.motion = None
+        self.eye_blink = 0
+        self.co2 = 0
+        self.nose = 0
+        self.mouse = 0
 
         self.frame = 0
         self.eye_alert_count = 0
@@ -58,6 +73,8 @@ class MyMqtt_Sub:
         self.mouse_alert_cnt = 0
 
         self.user_id = None
+        self.result_cnt = 0
+        self.co2_cnt = 0
         ###########################
         client.loop_forever()
 
@@ -72,20 +89,38 @@ class MyMqtt_Sub:
 
     def on_message(self, client, userdata, msg):
 
-        # start = time.time()
-        self.frame += 1
+        start = time.time()
+        # self.frame += 1
 
+        # 졸음 상태 => boolean 줘서 다른 간섭 안하도록?
         if msg.topic == "Sleep/img":
-            json_data = json.loads(msg.payload)
-            myval = np.frombuffer(base64.b64decode(json_data['byteArr']), np.uint8)
-            myval = myval.reshape(426, 240, 3)
+
+            try:
+                f = open('output1.jpg', "wb")
+                json_data = json.loads(msg.payload)
+
+                f.write(base64.b64decode(json_data['byteArr']))
+                f.close()
+
+            except Exception as e:
+                print("error ", e)
+
+            myval = cv2.imread('output1.jpg')
+            print(int(json_data['user_id']))
+
+            # json_data = json.loads(msg.payload)
+            # myval = np.frombuffer(base64.b64decode(json_data['byteArr']), np.uint8)
+            # # myval = np.frombuffer(json_data['byteArr'], np.uint8)
+            # myval = myval.reshape(426, 240, 3)
 
             if self.origin_img is None:
                 self.origin_img = myval
             else:
                 faces = self.detector(myval)
+                is_face_exist = False
 
                 for face in faces:
+                    is_face_exist = True
                     shapes = self.predictor(myval, face)
                     shapes = face_utils.shape_to_np(shapes)
 
@@ -120,12 +155,12 @@ class MyMqtt_Sub:
                         self.eye_alert_count = 0
                         self.eye_blink = 0
 
-                    # eye_alert_count가 10 초과하면 경고 메세지
-                    if self.eye_alert_count > 10:
+                    # eye_alert_count가 10 초과하면 eye_blink = 1
+                    if self.eye_alert_count >= 10:
                         print("Wake up!(eye_blink)")
                         self.eye_blink = 1
 
-                    # 코 끝 특징점이 기존에 비해 내려가면 고개 내려갔다고 판정?
+                    # 코 끝 특징점이 기존에 비해 내려가면 고개 내려갔다고 판정
                     if self.nose_cnt == 0:
                         self.nose_sum += shapes[33][1]
                         self.nose_cnt += 1
@@ -137,9 +172,12 @@ class MyMqtt_Sub:
                         self.nose_cnt += 1
                         self.nose_mean = self.nose_sum / self.nose_cnt
                         self.nose_alert_cnt = 0
+                        self.nose = 0
 
-                    if self.nose_alert_cnt > 10:
+                    # nose_alert_cnt가 10 초과하면 nose = 1
+                    if self.nose_alert_cnt >= 10:
                         print("Wake up!(movement)")
+                        self.nose = 1
 
                     # 입 특징점 기반으로 하품 감지
                     mouse_rate = (shapes[57][1] - shapes[51][1]) / (shapes[54][0] - shapes[48][0])
@@ -155,32 +193,104 @@ class MyMqtt_Sub:
                         self.mouse_cnt += 1
                         self.mouse_mean = self.mouse_sum / self.mouse_cnt
                         self.mouse_alert_cnt = 0
+                        self.mouse = 0
 
-                    if self.mouse_alert_cnt > 10:
+                    # mouse_alert_cnt가 10 초과하면 mouse = 1
+                    if self.mouse_alert_cnt >= 10:
                         print("Wake up!(yawning)")
+                        self.mouse = 1
+
+                if is_face_exist:
+                    result = self.sleep_gate(self.eye_blink, self.nose, self.mousem, self.co2)
+
+                    # 경고 및 위험 알람을 울릴 때 DB에 졸음 상태 저장
+                    if result == 1:
+                        # 관짝 소년단?
+                        print("위험")
+                    elif result == 2:
+                        # 경고 알림
+                        print("경고")
+
+                    # if result > 0 and (self.result_cnt % 5 == 0) and (self.result_cnt != 0):
+                    #
+                    #     if self.result_cnt == 15:
+                    #         time_now = datetime.datetime.now()
+                    #
+                    #         sql = "INSERT INTO analysisApp_eye (user_id_id, is_sleep, time) VALUES (%s, %s, %s)"
+                    #         val = ("him", result, time_now)
+                    #
+                    #         self.cursor.execute(sql, val)
+                    #
+                    #         self.mydb.commit()
+                    #         # publish.single("android/him", "눈을 뜨세요", hostname=self.json_data["EC2"]["AI_IP"])
+                    #         print(time_now)
+                    #         print("눈을 뜨세요")
+                    #     elif self.result_cnt == 20:
+                    #         time_now = datetime.datetime.now()
+                    #
+                    #         sql = "INSERT INTO analysisApp_eye (user_id_id, is_sleep, time) VALUES (%s, %s, %s)"
+                    #         val = ("him", result, time_now)
+                    #
+                    #         self.cursor.execute(sql, val)
+                    #
+                    #         self.mydb.commit()
+                    #         # publish.single("android/him", "졸면 안돼요", hostname=self.json_data["EC2"]["AI_IP"])
+                    #         print(time_now)
+                    #         print("졸면 안돼요")
+                    #
+                    #     # if result == 1:
+                    #     #     if self.result_cnt == 10:
+                    #     #         # publish.single("android/him", "눈을 뜨세요", hostname=self.json_data["EC2"]["AI_IP"])
+                    #     #         print("눈을 뜨세요")
+                    #     #     elif self.result_cnt % 20 == 0:
+                    #     #         # publish.single("android/him", "졸면 안돼요", hostname=self.json_data["EC2"]["AI_IP"])
+                    #     #         print("졸면 안돼요")
+                    #
+                    #     self.result_cnt += 1
+                    #
+                    # elif result > 0:
+                    #     self.result_cnt += 1
+                    # else:
+                    #     self.result_cnt = 0
 
         elif msg.topic == 'Sleep/Co2':
 
-            if msg.payload >= 1500:
-                print("Wake Up!(Co2)")
-                self.co2 = 1
-            elif msg.payload >= 2000:
-                # 창문 열린다든지?
-                self.co2 = 2
+            json_Co2 = json.loads(msg.payload)
+            myCo2 = int(json_Co2['content'])
+            print(myCo2)
+
+            if myCo2 >= 1800:
+                self.co2_cnt += 1
             else:
                 self.co2 = 0
+                self.co2_cnt = 0
 
-        # 졸음 상태일 시 안드로이드로 값? 전송
-        # self.sleep_gate(self, self.eye_blink, self.motion, self.co2)
+            if self.co2_cnt > 10:
+                print("Wake Up!(Co2)")
+                self.co2 = 1
+
         # print("time :", time.time() - start)
-        print("", self.frame)
+        # print("", self.frame)
 
-    @staticmethod
-    def sleep_gate(self, eye_blink, motion, co2):
-        if eye_blink == 1 and motion == 1 and co2 == 1:
-            print("졸았다!!!!!")
+    def sleep_gate(self, eye_blink, mouse, nose, co2):
+        if eye_blink == 1:
+            return 1    # 졸음
+
+        cnt = 0
+
+        if nose == 1:
+            cnt += 1
+        if mouse == 1:
+            cnt += 1
+        if co2 == 1:
+            cnt += 1
+
+        if cnt > 1:     # 눈 깜박임을 제외한 조건 2가지 이상 만족 => 졸음
+            return 1    # 졸음
+        elif cnt == 1:  # 눈 깜박임을 제외한 조건 1가지 만족 => 경계
+            return 2    # 경계
         else:
-            print("안 졸았다!!")
+            return 0    # 안졸음
 
     def crop_eye(self, img, eye_points):
         x1, y1 = np.amin(eye_points, axis=0)

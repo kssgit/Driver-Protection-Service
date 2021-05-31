@@ -14,10 +14,19 @@ import retrofit2.http.Path;
 public interface RetrofitAPI {
 
     public static final String REGIST_URL = "https://13.208.255.135:8000/";
+//    public static final String REGIST_URL = "https://10.0.2.2:8000/";
+
     @GET("api/userdata/{userid}")
     Call<ResponseBody> getUserdata(@Path("userid") String userid);
 
+    @GET("api/userdata/{userid}")
+    Call<ResponseBody> getTestdata(@Path("userid") String userid);
 
+    @GET("api/userIDcheck/{userid}")
+    Call<ResponseBody> getUserIdCheck(@Path("userid") String userid);
+
+    @GET("api/userSerialcheck/{serial_no1}")
+    Call<ResponseBody> getUserSerialCheck(@Path("serial_no1") String serial_no1);
 
     @POST("api/login/")
     Call<ResponseBody> getLogin(

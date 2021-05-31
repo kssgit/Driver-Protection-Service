@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
 from pathlib import Path
+import os
 import json
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,8 +23,7 @@ with open(os.path.join(BASE_DIR, 'key.json')) as json_file:
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-secret_key = json_data["Django_Server"]
-SECRET_KEY = secret_key["SECRET_KEY"]
+SECRET_KEY = json_data["Django_Server"]["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -81,18 +81,16 @@ WSGI_APPLICATION = 'UserService.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-db = json_data["DB_Server"]
-ip = json_data["EC2"]
 DATABASES = {
     'default': {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': BASE_DIR / 'db.sqlite3',
         'ENGINE' : 'django.db.backends.mysql',
-        'NAME' : db["NAME"], # 테이블들이 들어갈 데이터베이스 이름
-        'USER' : db["USER"],
-        'PASSWORD' :db["PASSWORD"],
-        'HOST' : ip["IP"],
-        'PORT' : db["PORT"]
+        'NAME' : json_data["DB_Server"]["NAME"], # 테이블들이 들어갈 데이터베이스 이름
+        'USER' : json_data["DB_Server"]["USER"],
+        'PASSWORD' :json_data["DB_Server"]["PASSWORD"],
+        'HOST' : json_data["EC2"]["IP"],
+        'PORT' : json_data["DB_Server"]["PORT"]
     }
 }
 
