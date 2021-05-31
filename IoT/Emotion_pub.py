@@ -8,7 +8,7 @@ import PIL.Image as pilimg
 with open('../key.json', 'r') as f:
     json_data = json.load(f)
 
-cap = cv2.VideoCapture('C:/Users/s_csmscox/jupyterSave/eye_blink/face.mp4')
+cap = cv2.VideoCapture('C:/Users/s_csmscox/jupyterSave/eye_blink/ych.mp4')
 total_start = time.time()
 frame = 0
 
@@ -30,11 +30,11 @@ while True:
 
     # byteArr = base64.b64encode(img)
 
-    MQTT_MSG = json.dumps({"byteArr": byteArr.decode('utf-8'), "user_id": 0})
-    publish.single("Sleep/img", MQTT_MSG, hostname=json_data["EC2"]["AI_IP"])
+    MQTT_MSG = json.dumps({"byteArr": byteArr.decode('utf-8'), "user_id": frame})
+    publish.single("Emotion/img", MQTT_MSG, hostname=json_data["EC2"]["AI_IP"])
     print("", frame)
     print(time.time() - start)
-    time.sleep(0.1)
+    time.sleep(0.005)
 
     frame += 1
 
