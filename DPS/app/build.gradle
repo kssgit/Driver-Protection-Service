@@ -64,7 +64,7 @@ dependencies {
     //로그인 버튼
     implementation 'com.royrodriguez:transitionbutton:0.2.0'
     //네비게이터 바
-    implementation 'com.github.devlight.navigationtabstrip:navigationtabstrip:1.0.4'
+   // implementation 'com.github.devlight.navigationtabstrip:navigationtabstrip:1.0.4'
     //알람 스위치
     implementation 'com.github.angads25:toggle:1.0.0'
 }

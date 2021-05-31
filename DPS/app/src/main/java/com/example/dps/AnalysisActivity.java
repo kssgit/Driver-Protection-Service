@@ -3,6 +3,9 @@ package com.example.dps;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -18,7 +21,7 @@ import com.example.dps.login.SaveSharedPreference;
 import com.example.dps.notification.Constants;
 import com.example.dps.notification.NotificationHelper;
 import com.example.dps.notification.PreferenceHelper;
-import com.gigamole.navigationtabstrip.NavigationTabStrip;
+
 import com.github.angads25.toggle.LabeledSwitch;
 import com.github.angads25.toggle.interfaces.OnToggledListener;
 import com.google.android.material.tabs.TabLayout;
@@ -96,6 +99,8 @@ public class AnalysisActivity extends AppCompatActivity {
         }
     };
 
+
+
     // 푸시알림 설정
     private void initSwitchLayout(final WorkManager workManager) {
         LabeledSwitch labeledSwitch = findViewById(R.id.switch_second_notify);
@@ -124,7 +129,11 @@ public class AnalysisActivity extends AppCompatActivity {
     }
 //  mqtt
     public void mqtt_sub() {
-        mqttAndroidClient = new MqttAndroidClient(this,"tcp://54.180.214.221:1883", MqttClient.generateClientId());
+//        mqttAndroidClient = new MqttAndroidClient(this,"tcp://54.180.214.221:1883", MqttClient.generateClientId());
+        mqttAndroidClient = new MqttAndroidClient(this,"tcp://13.208.255.135:1883", MqttClient.generateClientId());
+        //알람 mp3 설정
+        MediaPlayer player = MediaPlayer.create(this,R.raw.alam);
+
         try {
             IMqttToken token =mqttAndroidClient.connect();
             token.setActionCallback(new IMqttActionListener() {
@@ -135,10 +144,10 @@ public class AnalysisActivity extends AppCompatActivity {
                             @RequiresApi(api = Build.VERSION_CODES.R)
                             @Override
                             public void messageArrived(String topic, MqttMessage message) throws Exception {
-                                System.out.println("1"+message.toString());
                                 //TTS 변환 및 팝업 activity 실행
                                 subMessage = message.toString();
-                                speakOut();
+//                                speakOut();
+                                player.start();
                             }
                         });
                     } catch (MqttException e) {
@@ -170,8 +179,7 @@ public class AnalysisActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.pager_content);
         logout_btn=findViewById(R.id.logout_btn);
 
-        //notification
-//        NotificationHelper.createNotificationChannel(getApplicationContext());
+
 
         //Json_data 가져오기
         //  1. user_id를 이용해서 장고에 데이터 요청
