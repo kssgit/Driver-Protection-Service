@@ -91,6 +91,7 @@ class MyMqtt_Sub:
         self.ppm = 0
         self.is_face_exist = False
         self.pred_time = datetime.datetime.now()
+        self.co2_pred_time = self.pred_time
         ###########################
         client.loop_forever()
 
@@ -107,6 +108,7 @@ class MyMqtt_Sub:
 
         # start = time.time()
         # self.frame += 1
+        time_now = datetime.datetime.now()
 
         # 졸음 상태 => boolean 줘서 다른 간섭 안하도록?
         if msg.topic == "Sleep/img":
@@ -217,6 +219,8 @@ class MyMqtt_Sub:
                         print("Wake up!(yawning)")
                         self.mouse = 1
 
+            print(self.eye_blink, self.nose, self.mouse, self.co2)
+
         if msg.topic == 'Sleep/Co2':
 
             payload = json.loads(msg.payload)
@@ -233,10 +237,20 @@ class MyMqtt_Sub:
                 print("Wake Up!(Co2)")
                 self.co2 = 1
 
-        time_now = datetime.datetime.now()
+            print(self.ppm)
 
-        print(self.eye_blink, self.nose, self.mouse, self.co2)
-        print(self.ppm)
+        if (time_now - self.co2_pred_time).seconds >= 5:
+            MQTT_MSG = json.dumps({"type": 3, "co2": self.ppm})
+
+            # publish.single("android/him", MQTT_MSG, hostname=self.json_data["EC2"]["AI_IP"])
+
+            sql = "INSERT INTO analysisApp_co2 (user_id_id, amount, time) VALUES (%s, %s, %s)"
+            val = ("him", self.ppm, time_now)
+
+            self.cursor.execute(sql, val)
+            self.mydb.commit()
+
+            self.co2_pred_time = datetime.datetime.now()
 
         if self.is_face_exist and (time_now - self.pred_time).seconds >= 5:
             result = self.sleep_gate(self.eye_blink, self.nose, self.mouse, self.co2)
@@ -246,7 +260,7 @@ class MyMqtt_Sub:
                 # 관짝 소년단
                 MQTT_MSG = json.dumps({"type": 2})
 
-                publish.single("android/him", MQTT_MSG, hostname=self.json_data["EC2"]["AI_IP"])
+                # publish.single("android/him", MQTT_MSG, hostname=self.json_data["EC2"]["AI_IP"])
 
                 print("위험")
             elif result == 2:
@@ -254,24 +268,15 @@ class MyMqtt_Sub:
                 if self.co2 == 1:
                     MQTT_MSG = json.dumps({"type": 1, "message": "창문을 열어주세요"})
 
-                    publish.single("android/him", MQTT_MSG, hostname=self.json_data["EC2"]["AI_IP"])
+                    # publish.single("android/him", MQTT_MSG, hostname=self.json_data["EC2"]["AI_IP"])
                 else:
                     MQTT_MSG = json.dumps({"type": 1, "message": "전방을 주시하세요"})
 
-                    publish.single("android/him", MQTT_MSG, hostname=self.json_data["EC2"]["AI_IP"])
+                    # publish.single("android/him", MQTT_MSG, hostname=self.json_data["EC2"]["AI_IP"])
 
                 print("경고")
             else:
                 print("안졸음")
-
-            MQTT_MSG = json.dumps({"type": 3, "co2": self.ppm})
-
-            publish.single("android/him", MQTT_MSG, hostname=self.json_data["EC2"]["AI_IP"])
-
-            sql = "INSERT INTO analysisApp_co2 (user_id_id, amount, time) VALUES (%s, %s, %s)"
-            val = ("him", self.ppm, time_now)
-
-            self.cursor.execute(sql, val)
 
             sql = "INSERT INTO analysisApp_eye (user_id_id, is_sleep, time) VALUES (%s, %s, %s)"
             val = ("him", result, time_now)
