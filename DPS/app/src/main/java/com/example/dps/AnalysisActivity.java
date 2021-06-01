@@ -3,6 +3,7 @@ package com.example.dps;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -19,6 +20,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -31,6 +33,7 @@ import com.example.dps.notification.PreferenceHelper;
 import com.github.angads25.toggle.LabeledSwitch;
 import com.github.angads25.toggle.interfaces.OnToggledListener;
 import com.google.android.material.tabs.TabLayout;
+import com.google.gson.JsonObject;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -75,6 +78,7 @@ public class AnalysisActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private AnalysisPagerAdapter mAnalysisPagerAdapter;
     ImageButton img_btn;
+    TextView co2_view;
     //JsonData
     JSONArray co2;
     JSONArray eye;
@@ -133,12 +137,28 @@ public class AnalysisActivity extends AppCompatActivity {
             }
         });
     }
-//  mqtt
+    //mqtt_pub
+    public void mqtt_pub(){
+        mqttAndroidClient = new MqttAndroidClient(this,"tcp://54.180.214.221:1883", MqttClient.generateClientId());
+
+        try {
+            mqttAndroidClient.connect();
+            mqttAndroidClient.publish("android/01", new MqttMessage(new String("start").getBytes()));
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>pub 성공");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+//  mqtt sub
     public void mqtt_sub() {
         mqttAndroidClient = new MqttAndroidClient(this,"tcp://54.180.214.221:1883", MqttClient.generateClientId());
 //        mqttAndroidClient = new MqttAndroidClient(this,"tcp://13.208.255.135:1883", MqttClient.generateClientId());
         //알람 mp3 설정
         MediaPlayer player = MediaPlayer.create(this,R.raw.alam);
+        //co2 text
+        co2_view = findViewById(R.id.co2_view);
 
         try {
             IMqttToken token =mqttAndroidClient.connect();
@@ -151,9 +171,31 @@ public class AnalysisActivity extends AppCompatActivity {
                             @Override
                             public void messageArrived(String topic, MqttMessage message) throws Exception {
                                 //TTS 변환 및 팝업 activity 실행
-                                subMessage = message.toString();
-                                speakOut();
-//                                player.start();
+//
+                                String jsonmessage = message.toString();
+                                JSONObject jsonObj = new JSONObject(jsonmessage);
+                                Integer type = (Integer)jsonObj.get("type");
+
+                                if (type == 1){
+                                    subMessage = (String)jsonObj.get("message");
+                                    speakOut();
+                                }
+                                if(type == 2){
+                                    player.start();
+                                }
+                                if(type == 3){
+                                    Integer co2_v = (Integer) jsonObj.get("co2");
+                                    if(co2_v > 2000) {
+                                        co2_view.setTextColor(Color.parseColor("#E71D36"));
+                                        co2_view.setText("" + co2_v + "ppm");
+                                    }
+                                    if(co2_v < 2000) {
+                                        co2_view.setTextColor(Color.parseColor("#FFFFF3"));
+                                        co2_view.setText("" + co2_v + "ppm");
+                                    }
+                                }
+
+
                             }
                         });
                     } catch (MqttException e) {
@@ -173,6 +215,8 @@ public class AnalysisActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_analysis);
+        mqtt_pub();
+
         //tts
         tts = new TextToSpeech(this , listener);
 

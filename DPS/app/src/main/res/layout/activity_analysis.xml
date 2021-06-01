@@ -39,6 +39,24 @@
 
 
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:orientation="vertical">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:src="@drawable/co2"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/co2_view"
+                android:gravity="center"
+                android:textSize="30dp"
+                android:textColor="#FFFFF3"
+                android:text="0ppm"/>
+        </LinearLayout>
 
 
         <com.google.android.material.tabs.TabLayout
