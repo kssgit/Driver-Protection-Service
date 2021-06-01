@@ -40,58 +40,75 @@
 
         </LinearLayout>
         <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"/>
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
 
             android:orientation="vertical">
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:src="@drawable/co2"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/co2_view"
                 android:gravity="center"
-                android:textSize="30dp"
+                android:textSize="40dp"
+                android:textStyle="bold|normal"
                 android:textColor="#FFFFF3"
-                android:text="0ppm"/>
+                android:text="현재 Co2 농도"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"/>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:src="@drawable/co2"/>
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="50dp"/>
+            <TextView
+                android:id="@+id/co2_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="1565ppm"
+                android:textColor="#FFFFF3"
+                android:textSize="30dp" />
         </LinearLayout>
 
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/analysis_tab_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+<!--        <com.google.android.material.tabs.TabLayout-->
+<!--            android:id="@+id/analysis_tab_layout"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content">-->
 
-            <com.google.android.material.tabs.TabItem
-                android:id="@+id/total_tab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="종합 분석" />
+<!--            <com.google.android.material.tabs.TabItem-->
+<!--                android:id="@+id/total_tab"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="종합 분석" />-->
 
-            <com.google.android.material.tabs.TabItem
-                android:id="@+id/co2_tab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="이산화탄소" />
+<!--            <com.google.android.material.tabs.TabItem-->
+<!--                android:id="@+id/co2_tab"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="이산화탄소" />-->
 
-            <com.google.android.material.tabs.TabItem
-                android:id="@+id/emotion_tab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="감정" />
+<!--            <com.google.android.material.tabs.TabItem-->
+<!--                android:id="@+id/emotion_tab"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="감정" />-->
 
-            <com.google.android.material.tabs.TabItem
-                android:id="@+id/eye_tab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="눈감음" />
-        </com.google.android.material.tabs.TabLayout>
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/pager_content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+<!--            <com.google.android.material.tabs.TabItem-->
+<!--                android:id="@+id/eye_tab"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="눈감음" />-->
+<!--        </com.google.android.material.tabs.TabLayout>-->
+<!--        <androidx.viewpager.widget.ViewPager-->
+<!--            android:id="@+id/pager_content"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent" />-->
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
