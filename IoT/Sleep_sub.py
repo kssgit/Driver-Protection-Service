@@ -62,7 +62,8 @@ class MyMqtt_Sub:
 
         self.img_size = (32, 32)
 
-        self.model = load_model('C:/Users/s_csmscox/jupyterSave/eye_blink/eye_blink_CNN_ImgGen1_FT.h5')
+        with tf.device('/cpu:0'):
+            self.model = load_model('C:/Users/dltmd/jupyterSave/model/eye_blink_CNN_ImgGen1_FT.h5')
 
         self.origin_img = None
 
@@ -104,7 +105,7 @@ class MyMqtt_Sub:
 
     def on_message(self, client, userdata, msg):
 
-        start = time.time()
+        # start = time.time()
         # self.frame += 1
 
         # 졸음 상태 => boolean 줘서 다른 간섭 안하도록?
@@ -123,7 +124,6 @@ class MyMqtt_Sub:
                 print("error ", e)
 
             myval = cv2.imread('output1.jpg')
-            print(int(payload['user_id']))
 
             # json_data = json.loads(msg.payload)
             # myval = np.frombuffer(base64.b64decode(json_data['byteArr']), np.uint8)
@@ -152,7 +152,8 @@ class MyMqtt_Sub:
                         np.float32)
                     eye_input_l = eye_input_l / 255
 
-                    pred_l = self.model.call(tf.convert_to_tensor(eye_input_l), training=False)
+                    with tf.device('/cpu:0'):
+                        pred_l = self.model.call(tf.convert_to_tensor(eye_input_l), training=False)
                     pred_l = np.argmax(pred_l)
 
                     # 오른쪽 눈
@@ -160,7 +161,8 @@ class MyMqtt_Sub:
                         np.float32)
                     eye_input_r = eye_input_r / 255
 
-                    pred_r = self.model.call(tf.convert_to_tensor(eye_input_r), training=False)
+                    with tf.device('/cpu:0'):
+                        pred_r = self.model.call(tf.convert_to_tensor(eye_input_r), training=False)
                     pred_r = np.argmax(pred_r)
 
                     # 두 눈 다 감은 경우 졸음으로 예측
@@ -215,13 +217,13 @@ class MyMqtt_Sub:
                         print("Wake up!(yawning)")
                         self.mouse = 1
 
-        elif msg.topic == 'Sleep/Co2':
+        if msg.topic == 'Sleep/Co2':
 
             payload = json.loads(msg.payload)
             myco2 = int(payload['content'])
             self.ppm = myco2
 
-            if myco2 >= 1800:
+            if myco2 >= 2500:
                 self.co2_cnt += 1
             else:
                 self.co2 = 0
@@ -231,11 +233,12 @@ class MyMqtt_Sub:
                 print("Wake Up!(Co2)")
                 self.co2 = 1
 
-                print(myco2)
-
         time_now = datetime.datetime.now()
 
-        if self.is_face_exist and (self.pred_time - time_now).seconds >= 3:
+        print(self.eye_blink, self.nose, self.mouse, self.co2)
+        print(self.ppm)
+
+        if self.is_face_exist and (self.pred_time - time_now).seconds >= 5:
             result = self.sleep_gate(self.eye_blink, self.nose, self.mouse, self.co2)
 
             # 경고 및 위험 알람을 울릴 때 DB에 졸음 상태 저장
@@ -264,6 +267,18 @@ class MyMqtt_Sub:
             MQTT_MSG = json.dumps({"type": 3, "co2": self.ppm})
 
             publish.single("android/him", MQTT_MSG, hostname=self.json_data["EC2"]["AI_IP"])
+
+            sql = "INSERT INTO analysisApp_co2 (user_id_id, amount, time) VALUES (%s, %s, %s)"
+            val = ("him", self.ppm, time_now)
+
+            self.cursor.execute(sql, val)
+
+            sql = "INSERT INTO analysisApp_eye (user_id_id, is_sleep, time) VALUES (%s, %s, %s)"
+            val = ("him", result, time_now)
+
+            self.cursor.execute(sql, val)
+
+            self.mydb.commit()
 
             # sql = "INSERT INTO analysisApp_co2 (user_id_id, amount, time) VALUES (%s, %s, %s)"
             # val = ("him", result, time_now)
