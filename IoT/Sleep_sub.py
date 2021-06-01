@@ -238,7 +238,7 @@ class MyMqtt_Sub:
         print(self.eye_blink, self.nose, self.mouse, self.co2)
         print(self.ppm)
 
-        if self.is_face_exist and (self.pred_time - time_now).seconds >= 5:
+        if self.is_face_exist and (time_now - self.pred_time).seconds >= 5:
             result = self.sleep_gate(self.eye_blink, self.nose, self.mouse, self.co2)
 
             # 경고 및 위험 알람을 울릴 때 DB에 졸음 상태 저장
@@ -277,8 +277,9 @@ class MyMqtt_Sub:
             val = ("him", result, time_now)
 
             self.cursor.execute(sql, val)
-
             self.mydb.commit()
+
+            self.pred_time = datetime.datetime.now()
 
             # sql = "INSERT INTO analysisApp_co2 (user_id_id, amount, time) VALUES (%s, %s, %s)"
             # val = ("him", result, time_now)

@@ -136,6 +136,8 @@ class MyMqtt_Sub():
                 except:
                     pass
 
+            print(emo_pred)
+
             # {0: 'Angry', 1: 'Fear', 2: 'Happy', 3: 'Sad', 4: 'Neutral'}
             self.emo_pred_output.append(emo_pred)
 
