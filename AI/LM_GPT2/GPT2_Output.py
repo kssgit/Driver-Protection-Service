@@ -59,6 +59,7 @@ def generate_sent(seed_word, model, max_step=100, greedy=False, top_k=0, top_p=0
         toked = tokenizer(sent)
     return sent
 
+
 # 토크나이저 로드
 TOKENIZER_PATH = './gpt_ckpt/gpt2_kor_tokenizer.spiece'
 tokenizer = SentencepieceTokenizer(TOKENIZER_PATH, num_best=0, alpha=0)
@@ -124,5 +125,6 @@ else:
     if speed_rd <= 100 :
         print(mid_df)
     else:
-        Final_LM = print('현재 속도는 {} 킬로미터 입니다. 최대 속도 100 킬로미터로 제한됩니다. 제가 {}에 대한 문장을 만들어 볼께요.'.format(speed_rd, feeling(seed_word_random)), mid_df)
-        Final_LM
+        print('현재 속도는 {} 킬로미터 입니다. 최대 속도 100 킬로미터로 제한됩니다. 제가 {}에 대한 문장을 만들어 볼께요.'.format(speed_rd,
+                                                                                         feeling(seed_word_random)), mid_df)
+
