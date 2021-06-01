@@ -1,3 +1,5 @@
+import random
+
 import paho.mqtt.publish as publish
 import cv2
 import time
@@ -32,6 +34,11 @@ while True:
 
     MQTT_MSG = json.dumps({"byteArr": byteArr.decode('utf-8'), "user_id": frame})
     publish.single("Sleep/img", MQTT_MSG, hostname=json_data["EC2"]["AI_IP"])
+
+    ppm = random.randint(1500, 2500)
+    MQTT_MSG = json.dumps({"content": ppm})
+    publish.single("Sleep/Co2", MQTT_MSG, hostname=json_data["EC2"]["AI_IP"])
+
     print("", frame)
     print(time.time() - start)
     time.sleep(0.05)

@@ -3,7 +3,6 @@ import cv2
 import time
 import json
 import base64
-import PIL.Image as pilimg
 
 with open('../key.json', 'r') as f:
     json_data = json.load(f)
