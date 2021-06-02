@@ -2,8 +2,11 @@ package com.example.dps;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
+import org.eazegraph.lib.charts.BarChart;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.security.cert.CertificateException;
@@ -32,6 +35,16 @@ public class TestActivity extends AppCompatActivity {
     JSONArray eye;
     JSONArray emotion;
     JSONObject test;
+
+    // chart
+    View view;
+    BarChart yesterday_eyechart;
+    JSONArray co2_time;
+    JSONArray co2_amount;
+
+    int co2_len;
+    String[] time;
+    int[] amount;
     //retrofit
     Retrofit retrofit;
     RetrofitAPI retrofitAPI;
@@ -44,6 +57,7 @@ public class TestActivity extends AppCompatActivity {
         Intent intent = getIntent();
         user_id = intent.getExtras().getString("user_id");
 
+        yesterday_eyechart = (BarChart) findViewById(R.id.yesterday_eyechart);
 
         //Json_data 가져오기
         //  1. user_id를 이용해서 장고에 데이터 요청
@@ -65,8 +79,33 @@ public class TestActivity extends AppCompatActivity {
                     co2 = (JSONArray) jsonObj.get("Co2");
                     eye = (JSONArray) jsonObj.get("Eye");
                     emotion = (JSONArray) jsonObj.get("Emotion");
+
                     test = (JSONObject) jsonObj.get("Test");
-                    //System.out.println(test);
+
+                    System.out.println(test);
+
+
+                    co2_time = (JSONArray) test.get("time");
+                    co2_amount = (JSONArray) test.get("amount");
+
+                    co2_len = co2_time.length();
+                    time = new String[co2_len];
+                    amount = new int[co2_len];
+
+
+                    for(int i=0; i<co2_len; i++) {
+                        try {
+                            time[i] = co2_time.getString(i);
+                            amount[i] = co2_amount.getInt(i);
+                            System.out.println("co2_amount: : " + amount[i]);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+
+
                 } catch (Exception e) {
                     e.printStackTrace();
                     System.out.println("JsonObj 오류"); //확인
@@ -119,6 +158,33 @@ public class TestActivity extends AppCompatActivity {
         }
 
     }
+    // 막대 차트 설정
+    private void setBarChart() {
+
+
+
+
+       // yesterday_eyechart.clearChart();
+
+
+        /*
+        for(int i=0;i<time.length;i++){
+            yesterday_eyechart.addBar(new BarModel(time[i].substring(11, 16), amount[i], 0xFF56B7F1));
+        }
+        */
+
+        /*
+        co2chart.addBar(new BarModel("12", 10f, 0xFF56B7F1));
+        co2chart.addBar(new BarModel("13", 10f, 0xFF56B7F1));
+        co2chart.addBar(new BarModel("14", 10f, 0xFF56B7F1));
+        co2chart.addBar(new BarModel("15", 20f, 0xFF56B7F1));
+        co2chart.addBar(new BarModel("16", 10f, 0xFF56B7F1));
+        co2chart.addBar(new BarModel("17", 10f, 0xFF56B7F1));
+        */
+        //yesterday_eyechart.startAnimation();
+
+    }
 }
+
 
 

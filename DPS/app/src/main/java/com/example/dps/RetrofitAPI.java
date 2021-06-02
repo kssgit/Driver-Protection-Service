@@ -15,15 +15,15 @@ import retrofit2.http.Path;
 // POST : csrtoken 필요
 public interface RetrofitAPI {
 
-    public static final String REGIST_URL = "https://13.208.255.135:8000/";
-//    public static final String REGIST_URL = "https://10.0.2.2:8000/";
+    //public static final String REGIST_URL = "https://13.208.255.135:8000/";
+    public static final String REGIST_URL = "https://10.0.2.2:8000/";
 
-    //사용자 데이타 가져오기
+    // 사용자 데이타 가져오기
     @GET("api/userdata/{userid}")
     Call<ResponseBody> getUserdata(@Path("userid") String userid);
 
-
-    @GET("api/userdata/{userid}")
+    // 테스트 데이터 가져오기
+    @GET("api/testdata/{userid}")
     Call<ResponseBody> getTestdata(@Path("userid") String userid);
 
     //아이디 중복 check
@@ -55,4 +55,7 @@ public interface RetrofitAPI {
             @Body JoinVo joinVo
             );
 
+    // 어제 하루 데이터 가져오기
+    @GET("api/yesterdaydata/{userid}")
+    Call<ResponseBody> getYesterdaydata(@Path("userid") String userid);
 }

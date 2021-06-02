@@ -7,5 +7,6 @@ urlpatterns = [
     path('userSerialChange/',views.user_data_update),#시리얼 번호 변경
     path('userIDcheck/<str:userid>',views.userIdcheck),#아이디 중복 check
     path('userSerialcheck/<str:serial_no1>',views.serial_no_check),#시리얼 번호 중복 Check
-    path('test/<str:userid>',views.test),
+    path('testdata/<str:userid>',views.test),
+    path('yesterdaydata/<str:userid>', views.yesterdayData)
 ]
