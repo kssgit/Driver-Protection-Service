@@ -175,7 +175,7 @@ class MyMqtt_Sub:
                         self.eye_blink = 0
 
                     # eye_alert_count가 10 초과하면 eye_blink = 1
-                    if self.eye_alert_count >= 20:
+                    if self.eye_alert_count >= 5:
                         print("Wake up!(eye_blink)")
                         self.eye_blink = 1
 
@@ -184,7 +184,7 @@ class MyMqtt_Sub:
                         self.nose_sum += shapes[33][1]
                         self.nose_cnt += 1
                         self.nose_mean = self.nose_sum / self.nose_cnt
-                    elif shapes[33][1] - self.nose_mean > 10:
+                    elif shapes[33][1] - self.nose_mean > 20:
                         self.nose_alert_cnt += 1
                     else:
                         self.nose_sum += shapes[33][1]
@@ -215,11 +215,11 @@ class MyMqtt_Sub:
                         self.mouse = 0
 
                     # mouse_alert_cnt가 10 초과하면 mouse = 1
-                    if self.mouse_alert_cnt >= 20:
+                    if self.mouse_alert_cnt >= 5:
                         print("Wake up!(yawning)")
                         self.mouse = 1
 
-            print(self.eye_blink, self.nose, self.mouse, self.co2)
+                print(self.eye_blink, self.nose, self.mouse, self.co2)
 
         if msg.topic == 'Sleep/Co2':
 

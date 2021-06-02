@@ -80,7 +80,7 @@ public class AnalysisActivity extends AppCompatActivity {
     ImageButton img_btn;
     TextView co2_view;
     //JsonData
-    JSONArray co2;
+    Integer co2=1632;
     JSONArray eye;
     JSONArray emotion;
     //retrofit
@@ -182,15 +182,8 @@ public class AnalysisActivity extends AppCompatActivity {
                                     player.start();
                                 }
                                 if(type == 3){
-                                    Integer co2_v = (Integer) jsonObj.get("co2");
-                                    if(co2_v > 2000) {
-                                        co2_view.setTextColor(Color.parseColor("#E71D36"));
-                                        co2_view.setText("" + co2_v + "ppm");
-                                    }
-                                    if(co2_v < 2000) {
-                                        co2_view.setTextColor(Color.parseColor("#FFFFF3"));
-                                        co2_view.setText("" + co2_v + "ppm");
-                                    }
+                                    co2 = (Integer) jsonObj.get("co2");
+//
                                 }
 
 
@@ -250,7 +243,7 @@ public class AnalysisActivity extends AppCompatActivity {
                     ResponseBody body = response.body();
                     String jsonstr = body.string();
                     JSONObject jsonObj = new JSONObject(jsonstr);
-                    co2 = (JSONArray) jsonObj.get("Co2");
+//                    co2 = (JSONArray) jsonObj.get("Co2");
                     eye = (JSONArray) jsonObj.get("Eye");
                     emotion = (JSONArray) jsonObj.get("Emotion");
 
@@ -260,38 +253,38 @@ public class AnalysisActivity extends AppCompatActivity {
 
                     // Array를 각각의 fragment에 보내는 코드 짜기 (ArrayList???)
                     // TabLayout과 ViewPager 연결하기
-//                    mContext = getApplicationContext();
-//                    mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
-//                    mViewPager = (ViewPager) findViewById(R.id.pager_content);
-//                    mAnalysisPagerAdapter = new AnalysisPagerAdapter(
-//                            getSupportFragmentManager(), mTabLayout.getTabCount(), user_id,co2,emotion,eye);
-//
-//                    mViewPager.setAdapter(mAnalysisPagerAdapter);
-//                    mViewPager.setOffscreenPageLimit(mTabLayout.getTabCount());
-//
-//                    // ViewPager의 페이지가 변경될 때 알려주는 리스너
-//                    mViewPager.addOnPageChangeListener(
-//                            new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
-//
-//                    // Tab이 선택 되었을 때 알려주는 리스너
-//                    mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-//                        // Tab이 선택 되었을 때 호출되는 메서드
-//                        @Override
-//                        public void onTabSelected(TabLayout.Tab tab) {
-//                            mViewPager.setCurrentItem(tab.getPosition()); // 해당 탭으로 전환
-//
-//                        }
-//                        // Tab이 선택되지 않았을 때 호출되는 메서드
-//                        @Override
-//                        public void onTabUnselected(TabLayout.Tab tab) {
-//
-//                        }
-//                        // Tab이 다시 선택되었을 때 호출되는 메서드
-//                        @Override
-//                        public void onTabReselected(TabLayout.Tab tab) {
-//
-//                        }
-//                    });
+                    mContext = getApplicationContext();
+                    mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
+                    mViewPager = (ViewPager) findViewById(R.id.pager_content);
+                    mAnalysisPagerAdapter = new AnalysisPagerAdapter(
+                            getSupportFragmentManager(), mTabLayout.getTabCount(), user_id,co2,emotion,eye);
+
+                    mViewPager.setAdapter(mAnalysisPagerAdapter);
+                    mViewPager.setOffscreenPageLimit(mTabLayout.getTabCount());
+
+                    // ViewPager의 페이지가 변경될 때 알려주는 리스너
+                    mViewPager.addOnPageChangeListener(
+                            new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
+
+                    // Tab이 선택 되었을 때 알려주는 리스너
+                    mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                        // Tab이 선택 되었을 때 호출되는 메서드
+                        @Override
+                        public void onTabSelected(TabLayout.Tab tab) {
+                            mViewPager.setCurrentItem(tab.getPosition()); // 해당 탭으로 전환
+
+                        }
+                        // Tab이 선택되지 않았을 때 호출되는 메서드
+                        @Override
+                        public void onTabUnselected(TabLayout.Tab tab) {
+
+                        }
+                        // Tab이 다시 선택되었을 때 호출되는 메서드
+                        @Override
+                        public void onTabReselected(TabLayout.Tab tab) {
+
+                        }
+                    });
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -340,8 +333,9 @@ public class AnalysisActivity extends AppCompatActivity {
             case R.id.all_data:
                 return true;
             case R.id.one_day_data:
-
-
+                Intent intent = new Intent(this,DayDriveRiskActivity.class);
+                intent.putExtra("user_id", SaveSharedPreference.getUserID(this).toString());
+                startActivity(intent);
                 return true;
         }
 

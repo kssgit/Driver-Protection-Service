@@ -5,18 +5,43 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".DayDriveRiskActivity">
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-    <Button
-        android:id="@+id/analysis_page"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="종합 분석 페이지 이동"
-        tools:layout_editor_absoluteX="161dp"
-        tools:layout_editor_absoluteY="289dp" />
-</LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent">
+            <ImageButton
+                android:id="@+id/menu_btn"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/splash"
+                android:scaleType="fitCenter"
+                android:src="@drawable/list" />
+        </LinearLayout>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/scrollView">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <Button
+                    android:id="@+id/analysis_page"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="종합 분석 페이지 이동"
+                    tools:layout_editor_absoluteX="161dp"
+                    tools:layout_editor_absoluteY="289dp" />
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

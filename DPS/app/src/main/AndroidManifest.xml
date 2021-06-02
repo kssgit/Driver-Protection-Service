@@ -34,6 +34,7 @@
         android:roundIcon="@mipmap/ic_main_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Serial_ChangeActivity"></activity>
         <activity android:name=".DayDriveRiskActivity" />
         <activity android:name=".TestActivity" />
 
