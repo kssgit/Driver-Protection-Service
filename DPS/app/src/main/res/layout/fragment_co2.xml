@@ -9,22 +9,37 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
 
-        <org.eazegraph.lib.charts.BarChart
-            android:id="@+id/co2chart"
+        android:orientation="vertical">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="256dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="20dp"
-            android:padding="10dp"
-            app:egBarWidth="20dp"
-            app:egEnableScroll="true"
-            app:egFixedBarWidth="true"
-            app:egLegendHeight="40dp"
-            app:egShowDecimal="true" />
+            android:layout_height="80dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="현재 Co2 농도"
+            android:textColor="#FFFFF3"
+            android:textSize="40dp"
+            android:textStyle="bold|normal" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"/>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:src="@drawable/co2" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"/>
+        <TextView
+            android:id="@+id/co2_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="1565ppm"
+            android:textColor="#FFFFF3"
+            android:textSize="30dp" />
     </LinearLayout>
 
 </FrameLayout>

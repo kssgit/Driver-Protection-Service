@@ -9,7 +9,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -17,98 +18,64 @@
             android:orientation="horizontal">
 
             <ImageButton
+                android:id="@+id/menu_btn"
                 android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:src="@drawable/list"
+                android:layout_height="50dp"
                 android:background="@drawable/splash"
                 android:scaleType="fitCenter"
-                android:id="@+id/menu_btn"/>
+                android:src="@drawable/list" />
 
-                <com.github.angads25.toggle.LabeledSwitch
-                    android:id="@+id/switch_second_notify"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:layout_marginLeft="290dp"
-                    app:on="false"
-                    app:textOn="ON"
-                    app:textOff="OFF"
-                    app:colorOn="#00c4a6"
-                    app:colorBorder="#00c4a6" />
-
-
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="80dp"/>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textSize="40dp"
-                android:textStyle="bold|normal"
-                android:textColor="#FFFFF3"
-                android:text="현재 Co2 농도"/>
-            <LinearLayout
+            <com.github.angads25.toggle.LabeledSwitch
+                android:id="@+id/switch_second_notify"
                 android:layout_width="wrap_content"
-                android:layout_height="50dp"/>
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:src="@drawable/co2"/>
-<LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="50dp"/>
-            <TextView
-                android:id="@+id/co2_view"
-                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="1565ppm"
-                android:textColor="#FFFFF3"
-                android:textSize="30dp" />
+                android:layout_marginLeft="290dp"
+                android:textSize="14sp"
+                app:colorBorder="#00c4a6"
+                app:colorOn="#00c4a6"
+                app:on="false"
+                app:textOff="OFF"
+                app:textOn="ON" />
+
         </LinearLayout>
 
 
-<!--        <com.google.android.material.tabs.TabLayout-->
-<!--            android:id="@+id/analysis_tab_layout"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content">-->
 
-<!--            <com.google.android.material.tabs.TabItem-->
-<!--                android:id="@+id/total_tab"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="종합 분석" />-->
 
-<!--            <com.google.android.material.tabs.TabItem-->
-<!--                android:id="@+id/co2_tab"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="이산화탄소" />-->
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/analysis_tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-<!--            <com.google.android.material.tabs.TabItem-->
-<!--                android:id="@+id/emotion_tab"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="감정" />-->
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/total_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="종합 분석" />
 
-<!--            <com.google.android.material.tabs.TabItem-->
-<!--                android:id="@+id/eye_tab"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="눈감음" />-->
-<!--        </com.google.android.material.tabs.TabLayout>-->
-<!--        <androidx.viewpager.widget.ViewPager-->
-<!--            android:id="@+id/pager_content"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent" />-->
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/co2_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="이산화탄소" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/emotion_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="감정" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/eye_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="눈감음" />
+        </com.google.android.material.tabs.TabLayout>
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/pager_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
