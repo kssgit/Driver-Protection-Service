@@ -85,7 +85,7 @@ public class AnalysisPagerAdapter extends FragmentStatePagerAdapter {
         }
 
         // Eye: Json 형식 String으로 변환
-        eye_len = emotion.length();
+        eye_len = eye.length();
         eye_time = new String[eye_len];
         eye_issleep = new int[eye_len];
 

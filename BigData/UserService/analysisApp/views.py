@@ -6,7 +6,9 @@ from .UserDataSerializer import Co2Serializer,EmotionSerializer,EyeSerializer
 import json
 import hashlib
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
+
+
 # from django.core.context_processors import csrf
 
 # 회원 운전 위험수치 가져오기
@@ -131,6 +133,54 @@ def login(request):
 
 # 회원 운전 위험수치 가져오기
 @api_view(['GET'])
+def today_state(request, userid):
+    user_id = userid
+    print(user_id)
+
+    # 사용자의 ID를 가지고 해당 사용자의 데이터 구하기
+    # 졸음운전 데이터 + 감정 데이터
+    emotion = Emotion.objects.filter(user_id=user_id)
+
+    # 1. co2 전처리
+    emotion_time = []
+    emotion_emotion = []
+    for a in emotion:
+        emotion_time.append(a.time)
+        emotion_emotion.append(a.emotion)
+    df_Emotion = pd.DataFrame({'time':emotion_time, 'emotion':emotion_emotion})
+    print(df_Emotion)
+
+    # 1-1. 시간 전처리
+    # 1-1-1. 시간 단위 쪼개기
+    print(df_Emotion.info())
+    df_Emotion['year'] = df_Emotion['time'].dt.year
+    df_Emotion['month'] = df_Emotion['time'].dt.month
+    df_Emotion['day'] = df_Emotion['time'].dt.day
+    df_Emotion['hour'] = df_Emotion['time'].dt.hour
+    df_Emotion['minute'] = df_Emotion['time'].dt.minute
+    df_Emotion['second'] = df_Emotion['time'].dt.second
+    print(df_Emotion)
+    today = datetime.today()
+
+    # 1-1-2.
+    df_Emotion = df_Emotion.loc[df_Emotion.day==today.dt.day]
+
+    # 구한 데이터 Serializer
+    #co2Serializer = Co2Serializer(co2, many=True)
+    #eyeSerializer = EyeSerializer(eye, many=True)
+    #emotionSerializer = EmotionSerializer(emotion, many=True)
+
+    json_list = {
+        #'Co2': co2Serializer.data,
+        #'Eye': eyeSerializer.data,
+        #'Emotion': emotionSerializer.data,
+        'Test' : df_Emotion,
+    }
+
+    return Response(json_list)
+
+# 회원 운전 위험수치 가져오기
+@api_view(['GET'])
 def test(request, userid):
     user_id = userid
     print(user_id)
@@ -159,9 +209,18 @@ def test(request, userid):
     df_Co2['minute'] = df_Co2['time'].dt.minute
     df_Co2['second'] = df_Co2['time'].dt.second
     print(df_Co2)
-    print(datetime.today())
-    # 1-1-2.
+    print(datetime.today().day)
 
+    # 1-1-2. 오늘 날짜의 데이터만 추출
+    today = datetime.today()
+    df_Co2 = df_Co2.loc[df_Co2.year == today.year]
+    df_Co2 = df_Co2.loc[df_Co2.month==today.month]
+    df_Co2 = df_Co2.loc[df_Co2.day==today.day]
+    print(df_Co2)
+
+    # 1-1-2. 어제의 날짜 데이터만 추출
+    yesterday = datetime.today() - timedelta(1)
+    print(yesterday)
 
     # 구한 데이터 Serializer
     co2Serializer = Co2Serializer(co2, many=True)
