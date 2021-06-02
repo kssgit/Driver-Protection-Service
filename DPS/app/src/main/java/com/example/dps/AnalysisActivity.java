@@ -154,7 +154,7 @@ public class AnalysisActivity extends AppCompatActivity {
     public void mqtt_sub(MqttAndroidClient mqttAndroidClient) {
 //        mqttAndroidClient = new MqttAndroidClient(this,"tcp://13.208.255.135:1883", MqttClient.generateClientId());
         //알람 mp3 설정
-        MediaPlayer player = MediaPlayer.create(this,R.raw.alam);
+        MediaPlayer player = MediaPlayer.create(this,R.raw.alam2);
         //co2 text
         co2_view = findViewById(R.id.co2_view);
 
@@ -226,8 +226,8 @@ public class AnalysisActivity extends AppCompatActivity {
         user_id = intent.getExtras().getString("user_id");
 
         mContext = getApplicationContext();
-        mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
-        mViewPager = (ViewPager) findViewById(R.id.pager_content);
+//        mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
+//        mViewPager = (ViewPager) findViewById(R.id.pager_content);
 
         //메뉴 위젯 등록
         img_btn =(ImageButton)findViewById(R.id.menu_btn);
@@ -260,38 +260,38 @@ public class AnalysisActivity extends AppCompatActivity {
 
                     // Array를 각각의 fragment에 보내는 코드 짜기 (ArrayList???)
                     // TabLayout과 ViewPager 연결하기
-                    mContext = getApplicationContext();
-                    mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
-                    mViewPager = (ViewPager) findViewById(R.id.pager_content);
-                    mAnalysisPagerAdapter = new AnalysisPagerAdapter(
-                            getSupportFragmentManager(), mTabLayout.getTabCount(), user_id,co2,emotion,eye);
-
-                    mViewPager.setAdapter(mAnalysisPagerAdapter);
-                    mViewPager.setOffscreenPageLimit(mTabLayout.getTabCount());
-
-                    // ViewPager의 페이지가 변경될 때 알려주는 리스너
-                    mViewPager.addOnPageChangeListener(
-                            new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
-
-                    // Tab이 선택 되었을 때 알려주는 리스너
-                    mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-                        // Tab이 선택 되었을 때 호출되는 메서드
-                        @Override
-                        public void onTabSelected(TabLayout.Tab tab) {
-                            mViewPager.setCurrentItem(tab.getPosition()); // 해당 탭으로 전환
-
-                        }
-                        // Tab이 선택되지 않았을 때 호출되는 메서드
-                        @Override
-                        public void onTabUnselected(TabLayout.Tab tab) {
-
-                        }
-                        // Tab이 다시 선택되었을 때 호출되는 메서드
-                        @Override
-                        public void onTabReselected(TabLayout.Tab tab) {
-
-                        }
-                    });
+//                    mContext = getApplicationContext();
+//                    mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
+//                    mViewPager = (ViewPager) findViewById(R.id.pager_content);
+//                    mAnalysisPagerAdapter = new AnalysisPagerAdapter(
+//                            getSupportFragmentManager(), mTabLayout.getTabCount(), user_id,co2,emotion,eye);
+//
+//                    mViewPager.setAdapter(mAnalysisPagerAdapter);
+//                    mViewPager.setOffscreenPageLimit(mTabLayout.getTabCount());
+//
+//                    // ViewPager의 페이지가 변경될 때 알려주는 리스너
+//                    mViewPager.addOnPageChangeListener(
+//                            new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
+//
+//                    // Tab이 선택 되었을 때 알려주는 리스너
+//                    mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+//                        // Tab이 선택 되었을 때 호출되는 메서드
+//                        @Override
+//                        public void onTabSelected(TabLayout.Tab tab) {
+//                            mViewPager.setCurrentItem(tab.getPosition()); // 해당 탭으로 전환
+//
+//                        }
+//                        // Tab이 선택되지 않았을 때 호출되는 메서드
+//                        @Override
+//                        public void onTabUnselected(TabLayout.Tab tab) {
+//
+//                        }
+//                        // Tab이 다시 선택되었을 때 호출되는 메서드
+//                        @Override
+//                        public void onTabReselected(TabLayout.Tab tab) {
+//
+//                        }
+//                    });
 
                 } catch (Exception e) {
                     e.printStackTrace();
