@@ -134,54 +134,6 @@ def login(request):
 
 # 회원 운전 위험수치 가져오기
 @api_view(['GET'])
-def today_state(request, userid):
-    user_id = userid
-    print(user_id)
-
-    # 사용자의 ID를 가지고 해당 사용자의 데이터 구하기
-    # 졸음운전 데이터 + 감정 데이터
-    emotion = Emotion.objects.filter(user_id=user_id)
-
-    # 1. co2 전처리
-    emotion_time = []
-    emotion_emotion = []
-    for a in emotion:
-        emotion_time.append(a.time)
-        emotion_emotion.append(a.emotion)
-    df_Emotion = pd.DataFrame({'time':emotion_time, 'emotion':emotion_emotion})
-    print(df_Emotion)
-
-    # 1-1. 시간 전처리
-    # 1-1-1. 시간 단위 쪼개기
-    print(df_Emotion.info())
-    df_Emotion['year'] = df_Emotion['time'].dt.year
-    df_Emotion['month'] = df_Emotion['time'].dt.month
-    df_Emotion['day'] = df_Emotion['time'].dt.day
-    df_Emotion['hour'] = df_Emotion['time'].dt.hour
-    df_Emotion['minute'] = df_Emotion['time'].dt.minute
-    df_Emotion['second'] = df_Emotion['time'].dt.second
-    print(df_Emotion)
-    today = datetime.today()
-
-    # 1-1-2.
-    df_Emotion = df_Emotion.loc[df_Emotion.day==today.dt.day]
-
-    # 구한 데이터 Serializer
-    #co2Serializer = Co2Serializer(co2, many=True)
-    #eyeSerializer = EyeSerializer(eye, many=True)
-    #emotionSerializer = EmotionSerializer(emotion, many=True)
-
-    json_list = {
-        #'Co2': co2Serializer.data,
-        #'Eye': eyeSerializer.data,
-        #'Emotion': emotionSerializer.data,
-        'Test' : df_Emotion,
-    }
-
-    return Response(json_list)
-
-# 회원 운전 위험수치 가져오기
-@api_view(['GET'])
 def test(request, userid):
     user_id = userid
     print(user_id)
@@ -213,10 +165,10 @@ def test(request, userid):
     print(datetime.today().day)
 
     # 1-1-2. 오늘 날짜의 데이터만 추출
-    today = datetime.today()
-    df_Co2 = df_Co2.loc[df_Co2.year == today.year]
-    df_Co2 = df_Co2.loc[df_Co2.month==today.month]
-    df_Co2 = df_Co2.loc[df_Co2.day==today.day]
+    yesterday = datetime.today() - timedelta(1)
+    df_Co2 = df_Co2.loc[df_Co2.year == yesterday.year]
+    df_Co2 = df_Co2.loc[df_Co2.month==yesterday.month]
+    df_Co2 = df_Co2.loc[df_Co2.day==yesterday.day]
     print(df_Co2)
 
     # 1-1-2. 어제의 날짜 데이터만 추출
@@ -233,6 +185,89 @@ def test(request, userid):
         'Eye': eyeSerializer.data,
         'Emotion': emotionSerializer.data,
         'Test' : df_Co2,
+    }
+
+    return Response(json_list)
+
+# 회원 운전 위험수치 가져오기
+@api_view(['GET'])
+def yesterdayData(request, userid):
+    user_id = userid
+    print(user_id)
+
+    # 사용자의 ID를 가지고 해당 사용자의 데이터 구하기
+    eye = Eye.objects.filter(user_id=user_id)
+    emotion = Emotion.objects.filter(user_id=user_id)
+
+    # 1. eye 전처리
+    eye_time = []
+    eye_issleep = []
+    for a in eye:
+        eye_time.append(a.time)
+        eye_issleep.append(a.is_sleep)
+    df_eye = pd.DataFrame({'time': eye_time, 'is_sleep': eye_issleep})
+    print(df_eye)
+
+    # 1-2. 시간 단위 쪼개기
+    print(df_eye.info())
+    df_eye['year'] = df_eye['time'].dt.year
+    df_eye['month'] = df_eye['time'].dt.month
+    df_eye['day'] = df_eye['time'].dt.day
+    df_eye['hour'] = df_eye['time'].dt.hour
+    df_eye['minute'] = df_eye['time'].dt.minute
+    df_eye['second'] = df_eye['time'].dt.second
+    print(df_eye)
+
+    # 1-3. 어제의 날짜 데이터만 추출
+    yesterday = datetime.today() - timedelta(1)
+    print(yesterday)
+    df_eye = df_eye.loc[df_eye.year == yesterday.year]
+    df_eye = df_eye.loc[df_eye.month == yesterday.month]
+    df_eye = df_eye.loc[df_eye.day == yesterday.day]
+    print(df_eye)
+    print(df_eye.info())
+    # 1-4.
+    print(df_eye.groupby('is_sleep').size())
+    df_sleep = pd.DataFrame(df_eye.groupby('is_sleep').size())
+    #eye0 = df_eye.groupby('is_sleep').size()[0]
+    #eye1 = df_eye.groupby('is_sleep').size()[1]
+    #eye2 = df_eye.groupby('is_sleep').size()[2]
+
+    #df_sleep = pd.DataFrame({'good': eye0, 'sleep': eye1, 'warning': eye2})
+    print(df_sleep)
+    print(df_sleep.info())
+
+    # 2. emotion 전처리
+    emotion_time = []
+    emotion_emotion = []
+    for a in emotion:
+        emotion_time.append(a.time)
+        emotion_emotion.append(a.emotion)
+    df_emotion = pd.DataFrame({'time': emotion_time, 'emotion': emotion_emotion})
+    # print(df_emotion)
+
+    # 2-1. 시간 단위 쪼개기
+    # print(df_emotion.info())
+    df_emotion['year'] = df_emotion['time'].dt.year
+    df_emotion['month'] = df_emotion['time'].dt.month
+    df_emotion['day'] = df_emotion['time'].dt.day
+    df_emotion['hour'] = df_emotion['time'].dt.hour
+    df_emotion['minute'] = df_emotion['time'].dt.minute
+    df_emotion['second'] = df_emotion['time'].dt.second
+    # print(df_emotion)
+
+    # 2-2. 어제의 날짜 데이터만 추출
+    yesterday = datetime.today() - timedelta(1)
+    # print(yesterday)
+    df_emotion = df_emotion.loc[df_emotion.year == yesterday.year]
+    df_emotion = df_emotion.loc[df_emotion.month == yesterday.month]
+    df_emotion = df_emotion.loc[df_emotion.day == yesterday.day]
+    # print(df_emotion)
+
+
+    json_list = {
+        'Sleep' : df_sleep,
+        'Emotion' : df_emotion,
     }
 
     return Response(json_list)
