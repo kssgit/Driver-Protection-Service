@@ -20,13 +20,11 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 public class AnalysisPagerAdapter extends FragmentStatePagerAdapter {
 
 //    Json_data
-    JSONArray co2;
+    Integer co2;
     JSONArray eye;
     JSONArray emotion;
 
-    String[] co2_time;
-    int[] co2_amount;
-    int co2_len;
+
 
     String[] emotion_time;
     int[] emotion_emotion;
@@ -39,7 +37,7 @@ public class AnalysisPagerAdapter extends FragmentStatePagerAdapter {
     private int mPageCount;
     private String user_id;
     //생성자
-    public AnalysisPagerAdapter(FragmentManager fm, int pageCount, String user_id,JSONArray co2,JSONArray emotion,JSONArray eye) {
+    public AnalysisPagerAdapter(FragmentManager fm, int pageCount, String user_id,Integer co2,JSONArray emotion,JSONArray eye) {
         super(fm);
         this.mPageCount = pageCount;
         this.user_id= user_id;
@@ -51,21 +49,7 @@ public class AnalysisPagerAdapter extends FragmentStatePagerAdapter {
         System.out.println(user_id);
 
         // Co2 : Json 형식 String으로 변환
-        co2_len = co2.length();
-        co2_time = new String[co2_len];
-        co2_amount = new int[co2_len];
 
-        for(int i=0; i<co2_len; i++) {
-            try {
-                JSONObject  jsonObject = co2.getJSONObject(i);
-                co2_time[i] = jsonObject.getString("time");
-                co2_amount[i] = jsonObject.getInt("amount");
-                System.out.println("co2_amount: : " + co2_amount[i]);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        }
 
         // Emotion: Json 형식 String으로 변환
         emotion_len = emotion.length();
@@ -126,8 +110,7 @@ public class AnalysisPagerAdapter extends FragmentStatePagerAdapter {
 
                 Bundle co2Bundle = new Bundle();
                 co2Bundle.putString("user_id", user_id);
-                co2Bundle.putStringArray("time", co2_time);
-                co2Bundle.putIntArray("amount", co2_amount);
+                co2Bundle.putInt("amount", co2);
                 co2Fragment.setArguments(co2Bundle); //Name 변수 값 전달. 생략시 받는 쪽에서 null 값으로 받음
                 return co2Fragment;
 
