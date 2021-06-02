@@ -26,11 +26,20 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/scrollView">
+
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
-
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="#FFFFF3"
+                    android:textSize="40dp"
+                    android:textStyle="bold|normal"
+                    android:text="전날의 내 감정 수치"/>
                 <org.eazegraph.lib.charts.PieChart
                     android:id="@+id/yesterday_emotionchart"
                     android:layout_width="match_parent"
@@ -47,7 +56,14 @@
                     app:egShowDecimal="true" >
 
                 </org.eazegraph.lib.charts.PieChart>
-
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="#FFFFF3"
+                    android:textSize="40dp"
+                    android:textStyle="bold|normal"
+                    android:text="전날의 내 졸음 수치"/>
                 <org.eazegraph.lib.charts.PieChart
                     android:id="@+id/yesterday_sleepchart"
                     android:layout_width="match_parent"
