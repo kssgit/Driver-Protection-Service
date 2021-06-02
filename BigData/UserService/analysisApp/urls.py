@@ -8,5 +8,7 @@ urlpatterns = [
     path('userIDcheck/<str:userid>',views.userIdcheck),#아이디 중복 check
     path('userSerialcheck/<str:serial_no1>',views.serial_no_check),#시리얼 번호 중복 Check
     path('testdata/<str:userid>',views.test),
-    path('yesterdaydata/<str:userid>', views.yesterdayData)
+    path('yesterdaydata/<str:userid>', views.yesterdayData),
+    path('co2MeanData/<str:userid>', views.co2MeanData)
+
 ]

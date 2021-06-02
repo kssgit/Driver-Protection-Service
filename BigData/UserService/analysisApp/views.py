@@ -275,3 +275,43 @@ def yesterdayData(request, userid):
     }
 
     return Response(json_list)
+
+@api_view(['GET'])
+def co2MeanData(request, userid):
+    user_id = userid
+    print(user_id)
+
+    # 사용자의 ID를 가지고 해당 사용자의 데이터 구하기
+    co2 = Co2.objects.filter(user_id=user_id)
+
+    #  전처리
+    time = []
+    amount = []
+    for a in co2:
+        time.append(a.time)
+        amount.append(a.amount)
+    df_co2 = pd.DataFrame({'time': time, 'amount': amount})
+    print(df_co2)
+
+    # 1. 시간 단위 쪼개기
+    print(df_co2.info())
+    df_co2['year'] = df_co2['time'].dt.year
+    df_co2['month'] = df_co2['time'].dt.month
+    df_co2['day'] = df_co2['time'].dt.day
+    df_co2['hour'] = df_co2['time'].dt.hour
+    df_co2['minute'] = df_co2['time'].dt.minute
+    df_co2['second'] = df_co2['time'].dt.second
+    print(df_co2)
+
+    # 2. 시간대별 이산화탄소 평균 구하기
+    dfCo2 = pd.DataFrame(df_co2.groupby('hour', as_index=False).mean())
+    dfCo2 = dfCo2[['hour', 'amount']]
+    print(dfCo2)
+    print(dfCo2.info())
+    dfCo2.columns = ['hour', 'co2_mean']
+
+    json_list = {
+        'Co2Mean' : dfCo2,
+    }
+
+    return Response(json_list)
