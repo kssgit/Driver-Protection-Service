@@ -30,14 +30,44 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
-                <Button
-                    android:id="@+id/analysis_page"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="종합 분석 페이지 이동"
-                    tools:layout_editor_absoluteX="161dp"
-                    tools:layout_editor_absoluteY="289dp" />
+
+                <org.eazegraph.lib.charts.PieChart
+                    android:id="@+id/yesterday_emotionchart"
+                    android:layout_width="match_parent"
+                    android:layout_height="256dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginBottom="20dp"
+                    android:padding="10dp"
+                    app:egBarWidth="20dp"
+                    app:egEnableScroll="true"
+                    app:egFixedBarWidth="true"
+                    app:egLegendHeight="40dp"
+                    app:egShowDecimal="true" >
+
+                </org.eazegraph.lib.charts.PieChart>
+
+                <org.eazegraph.lib.charts.PieChart
+                    android:id="@+id/yesterday_sleepchart"
+                    android:layout_width="match_parent"
+                    android:layout_height="256dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginBottom="20dp"
+                    android:padding="10dp"
+                    app:egBarWidth="20dp"
+                    app:egEnableScroll="true"
+                    app:egFixedBarWidth="true"
+                    app:egLegendHeight="40dp"
+                    app:egShowDecimal="true" >
+
+                </org.eazegraph.lib.charts.PieChart>
+
+
             </LinearLayout>
+
         </ScrollView>
     </LinearLayout>
 
