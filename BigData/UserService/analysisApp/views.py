@@ -208,7 +208,7 @@ def yesterdayData(request, userid):
     df_eye = pd.DataFrame({'time': eye_time, 'is_sleep': eye_issleep})
     print(df_eye)
 
-    # 1-2. 시간 단위 쪼개기
+    # 1-1. 시간 단위 쪼개기
     print(df_eye.info())
     df_eye['year'] = df_eye['time'].dt.year
     df_eye['month'] = df_eye['time'].dt.month
@@ -218,7 +218,7 @@ def yesterdayData(request, userid):
     df_eye['second'] = df_eye['time'].dt.second
     print(df_eye)
 
-    # 1-3. 어제의 날짜 데이터만 추출
+    # 1-2. 어제의 날짜 데이터만 추출
     yesterday = datetime.today() - timedelta(1)
     print(yesterday)
     df_eye = df_eye.loc[df_eye.year == yesterday.year]
@@ -226,16 +226,13 @@ def yesterdayData(request, userid):
     df_eye = df_eye.loc[df_eye.day == yesterday.day]
     print(df_eye)
     print(df_eye.info())
-    # 1-4.
-    print(df_eye.groupby('is_sleep').size())
-    df_sleep = pd.DataFrame(df_eye.groupby('is_sleep').size())
-    #eye0 = df_eye.groupby('is_sleep').size()[0]
-    #eye1 = df_eye.groupby('is_sleep').size()[1]
-    #eye2 = df_eye.groupby('is_sleep').size()[2]
 
-    #df_sleep = pd.DataFrame({'good': eye0, 'sleep': eye1, 'warning': eye2})
+    # 1-3.졸음별 갯수 세기
+    print(df_eye.groupby('is_sleep', as_index=False).size())
+    df_sleep = pd.DataFrame(df_eye.groupby('is_sleep', as_index=False).size())
     print(df_sleep)
     print(df_sleep.info())
+    df_sleep.columns = ['is_sleep', 'count']
 
     # 2. emotion 전처리
     emotion_time = []
@@ -264,10 +261,17 @@ def yesterdayData(request, userid):
     df_emotion = df_emotion.loc[df_emotion.day == yesterday.day]
     # print(df_emotion)
 
+    # 2-3.졸음별 갯수 세기
+    print(df_emotion.groupby('emotion', as_index=False).size())
+    df_emo = pd.DataFrame(df_emotion.groupby('emotion', as_index=False).size())
+    print(df_emo)
+    print(df_emo.info())
+
+    df_emo.columns = ['emotion', 'count']
 
     json_list = {
         'Sleep' : df_sleep,
-        'Emotion' : df_emotion,
+        'Emotion' : df_emo,
     }
 
     return Response(json_list)
