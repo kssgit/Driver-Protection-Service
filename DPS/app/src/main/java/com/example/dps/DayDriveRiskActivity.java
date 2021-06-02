@@ -270,9 +270,6 @@ public class DayDriveRiskActivity extends AppCompatActivity {
                 ActivityCompat.finishAffinity(this);
                 System.exit(0);
                 return true;
-            case R.id.user_update:
-
-                return true;
             case R.id.all_data:
                 Intent intent_1 = new Intent(this,AnalysisActivity.class);
                 intent_1.putExtra("user_id", SaveSharedPreference.getUserID(this).toString());
