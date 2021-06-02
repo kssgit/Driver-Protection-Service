@@ -44,20 +44,7 @@ public class MainActivity extends AppCompatActivity {
     EditText userid,userpwd;
     CheckBox auto_login;
 
-    //mqtt
-//    private String pubMessage;
-//    private MqttAndroidClient mqttAndroidClient;
 
-    //mqtt_pub
-//    public void mqtt_pub(String user_id){
-//        mqttAndroidClient = new MqttAndroidClient(this,"tcp://13.208.255.135:1883", MqttClient.generateClientId());
-//        try {
-//            pubMessage = user_id;
-//            mqttAndroidClient.publish("android/userid", pubMessage.getBytes(), 0 , false );
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,10 +61,7 @@ public class MainActivity extends AppCompatActivity {
         login_button = findViewById(R.id.login_button);
         userid=findViewById(R.id.userID);
         userpwd=findViewById(R.id.userPwd);
-        //??
-//        WindowUtils.makeStatusbarTransparent(this);
-//        getSupportActionBar().hide();
-        //
+
         //로그인 버튼 클릭
         login_button.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -3,20 +3,37 @@ package com.example.dps;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
+
 
 import com.example.dps.Adapter.AnalysisPagerAdapter;
 import com.example.dps.login.SaveSharedPreference;
 import com.example.dps.notification.Constants;
 import com.example.dps.notification.NotificationHelper;
 import com.example.dps.notification.PreferenceHelper;
+
+import com.github.angads25.toggle.LabeledSwitch;
+import com.github.angads25.toggle.interfaces.OnToggledListener;
 import com.google.android.material.tabs.TabLayout;
+import com.google.gson.JsonObject;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -38,6 +55,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -57,10 +75,10 @@ public class AnalysisActivity extends AppCompatActivity {
     private String user_id;
     private Context mContext;
     private TabLayout mTabLayout;
-
     private ViewPager mViewPager;
     private AnalysisPagerAdapter mAnalysisPagerAdapter;
-    Button logout_btn;
+    ImageButton img_btn;
+    TextView co2_view;
     //JsonData
     JSONArray co2;
     JSONArray eye;
@@ -91,16 +109,19 @@ public class AnalysisActivity extends AppCompatActivity {
         }
     };
 
-    CompoundButton switchActivateNotify;
+
 
     // 푸시알림 설정
     private void initSwitchLayout(final WorkManager workManager) {
-        switchActivateNotify = (CompoundButton) findViewById(R.id.switch_second_notify);
-        switchActivateNotify.setChecked(PreferenceHelper.getBoolean(getApplicationContext(), Constants.SHARED_PREF_NOTIFICATION_KEY));
-        switchActivateNotify.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        LabeledSwitch labeledSwitch = findViewById(R.id.switch_second_notify);
+        labeledSwitch.setOn(PreferenceHelper.getBoolean(
+                getApplicationContext(), Constants.SHARED_PREF_NOTIFICATION_KEY
+        ));
+        labeledSwitch.setOnToggledListener(new OnToggledListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
+            public void onSwitched(LabeledSwitch labeledSwitch, boolean isOn) {
+                if (isOn) {
+                    Toast.makeText(AnalysisActivity.this, "8시 푸시알람이 켜졌습니다", Toast.LENGTH_SHORT).show();
                     boolean isChannelCreated = NotificationHelper.isNotificationChannelCreated(getApplicationContext());
                     if (isChannelCreated) {
                         PreferenceHelper.setBoolean(getApplicationContext(), Constants.SHARED_PREF_NOTIFICATION_KEY, true);
@@ -109,15 +130,34 @@ public class AnalysisActivity extends AppCompatActivity {
                         NotificationHelper.createNotificationChannel(getApplicationContext());
                     }
                 } else {
+                    Toast.makeText(AnalysisActivity.this, "8시 푸시알람이 꺼졌습니다", Toast.LENGTH_SHORT).show();
                     PreferenceHelper.setBoolean(getApplicationContext(), Constants.SHARED_PREF_NOTIFICATION_KEY, false);
                     workManager.cancelAllWork();
                 }
             }
         });
     }
-//  mqtt
-    public void mqtt_sub() {
-        mqttAndroidClient = new MqttAndroidClient(this,"tcp://54.180.214.221:1883", MqttClient.generateClientId());
+    //mqtt_pub
+    public void mqtt_pub(MqttAndroidClient mqttAndroidClient){
+
+        try {
+            mqttAndroidClient.connect();
+            mqttAndroidClient.publish("android/01", new MqttMessage(new String("start").getBytes()));
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>pub 성공");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+//  mqtt sub
+    public void mqtt_sub(MqttAndroidClient mqttAndroidClient) {
+//        mqttAndroidClient = new MqttAndroidClient(this,"tcp://13.208.255.135:1883", MqttClient.generateClientId());
+        //알람 mp3 설정
+        MediaPlayer player = MediaPlayer.create(this,R.raw.alam2);
+        //co2 text
+        co2_view = findViewById(R.id.co2_view);
+
         try {
             IMqttToken token =mqttAndroidClient.connect();
             token.setActionCallback(new IMqttActionListener() {
@@ -128,10 +168,32 @@ public class AnalysisActivity extends AppCompatActivity {
                             @RequiresApi(api = Build.VERSION_CODES.R)
                             @Override
                             public void messageArrived(String topic, MqttMessage message) throws Exception {
-                                System.out.println("1"+message.toString());
                                 //TTS 변환 및 팝업 activity 실행
-                                subMessage = message.toString();
-                                speakOut();
+//
+                                String jsonmessage = message.toString();
+                                JSONObject jsonObj = new JSONObject(jsonmessage);
+                                Integer type = (Integer)jsonObj.get("type");
+
+                                if (type == 1){
+                                    subMessage = (String)jsonObj.get("message");
+                                    speakOut();
+                                }
+                                if(type == 2){
+                                    player.start();
+                                }
+                                if(type == 3){
+                                    Integer co2_v = (Integer) jsonObj.get("co2");
+                                    if(co2_v > 2000) {
+                                        co2_view.setTextColor(Color.parseColor("#E71D36"));
+                                        co2_view.setText("" + co2_v + "ppm");
+                                    }
+                                    if(co2_v < 2000) {
+                                        co2_view.setTextColor(Color.parseColor("#FFFFF3"));
+                                        co2_view.setText("" + co2_v + "ppm");
+                                    }
+                                }
+
+
                             }
                         });
                     } catch (MqttException e) {
@@ -151,6 +213,11 @@ public class AnalysisActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_analysis);
+        //mqtt client
+        mqttAndroidClient = new MqttAndroidClient(this,"tcp://54.180.214.221:1883", MqttClient.generateClientId());
+
+        mqtt_pub(mqttAndroidClient);
+
         //tts
         tts = new TextToSpeech(this , listener);
 
@@ -159,12 +226,12 @@ public class AnalysisActivity extends AppCompatActivity {
         user_id = intent.getExtras().getString("user_id");
 
         mContext = getApplicationContext();
-        mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
-        mViewPager = (ViewPager) findViewById(R.id.pager_content);
-        logout_btn=findViewById(R.id.logout_btn);
+//        mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
+//        mViewPager = (ViewPager) findViewById(R.id.pager_content);
 
-        //notification
-//        NotificationHelper.createNotificationChannel(getApplicationContext());
+        //메뉴 위젯 등록
+        img_btn =(ImageButton)findViewById(R.id.menu_btn);
+        registerForContextMenu(img_btn);
 
         //Json_data 가져오기
         //  1. user_id를 이용해서 장고에 데이터 요청
@@ -187,40 +254,44 @@ public class AnalysisActivity extends AppCompatActivity {
                     eye = (JSONArray) jsonObj.get("Eye");
                     emotion = (JSONArray) jsonObj.get("Emotion");
 
+                    //네비게이션 바
+//                    final NavigationTabStrip navigationTabStrip = (NavigationTabStrip) findViewById(R.id.navigation_header);
+//                    navigationTabStrip.setTitles("종합", "Co2", "졸음","감정");
+
                     // Array를 각각의 fragment에 보내는 코드 짜기 (ArrayList???)
                     // TabLayout과 ViewPager 연결하기
-                    mContext = getApplicationContext();
-                    mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
-                    mViewPager = (ViewPager) findViewById(R.id.pager_content);
-                    mAnalysisPagerAdapter = new AnalysisPagerAdapter(
-                            getSupportFragmentManager(), mTabLayout.getTabCount(), user_id,co2,emotion,eye);
-
-                    mViewPager.setAdapter(mAnalysisPagerAdapter);
-                    mViewPager.setOffscreenPageLimit(mTabLayout.getTabCount());
-
-                    // ViewPager의 페이지가 변경될 때 알려주는 리스너
-                    mViewPager.addOnPageChangeListener(
-                            new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
-
-                    // Tab이 선택 되었을 때 알려주는 리스너
-                    mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-                        // Tab이 선택 되었을 때 호출되는 메서드
-                        @Override
-                        public void onTabSelected(TabLayout.Tab tab) {
-                            mViewPager.setCurrentItem(tab.getPosition()); // 해당 탭으로 전환
-                            System.out.println("계속 나오는건가?");
-                        }
-                        // Tab이 선택되지 않았을 때 호출되는 메서드
-                        @Override
-                        public void onTabUnselected(TabLayout.Tab tab) {
-
-                        }
-                        // Tab이 다시 선택되었을 때 호출되는 메서드
-                        @Override
-                        public void onTabReselected(TabLayout.Tab tab) {
-
-                        }
-                    });
+//                    mContext = getApplicationContext();
+//                    mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
+//                    mViewPager = (ViewPager) findViewById(R.id.pager_content);
+//                    mAnalysisPagerAdapter = new AnalysisPagerAdapter(
+//                            getSupportFragmentManager(), mTabLayout.getTabCount(), user_id,co2,emotion,eye);
+//
+//                    mViewPager.setAdapter(mAnalysisPagerAdapter);
+//                    mViewPager.setOffscreenPageLimit(mTabLayout.getTabCount());
+//
+//                    // ViewPager의 페이지가 변경될 때 알려주는 리스너
+//                    mViewPager.addOnPageChangeListener(
+//                            new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
+//
+//                    // Tab이 선택 되었을 때 알려주는 리스너
+//                    mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+//                        // Tab이 선택 되었을 때 호출되는 메서드
+//                        @Override
+//                        public void onTabSelected(TabLayout.Tab tab) {
+//                            mViewPager.setCurrentItem(tab.getPosition()); // 해당 탭으로 전환
+//
+//                        }
+//                        // Tab이 선택되지 않았을 때 호출되는 메서드
+//                        @Override
+//                        public void onTabUnselected(TabLayout.Tab tab) {
+//
+//                        }
+//                        // Tab이 다시 선택되었을 때 호출되는 메서드
+//                        @Override
+//                        public void onTabReselected(TabLayout.Tab tab) {
+//
+//                        }
+//                    });
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -235,26 +306,54 @@ public class AnalysisActivity extends AppCompatActivity {
 
 
         //mqtt 호출
-        mqtt_sub() ;
+        mqtt_sub(mqttAndroidClient) ;
 
         //notification
         initSwitchLayout(WorkManager.getInstance(getApplicationContext()));
-        //로그 아웃
-        logout_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+
+    }
+
+    //menu 선택 이벤트
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater mi = getMenuInflater();
+        if(v == img_btn) {
+            System.out.println("실행");
+            mi.inflate(R.menu.menu, menu);
+        }
+
+    }
+    // menu item 선택 시 실행
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId()){
+            //로그아웃
+            case R.id.logout_btn:
                 SaveSharedPreference.clearUserName(AnalysisActivity.this);
                 ActivityCompat.finishAffinity(AnalysisActivity.this);
                 System.exit(0);
-            }
-        });
+                return true;
+            case R.id.user_update:
+                System.out.println();
+                return true;
+            case R.id.all_data:
+                return true;
+            case R.id.one_day_data:
+
+
+                return true;
+        }
+
+        return false;
     }
+
 
     @RequiresApi(api = Build.VERSION_CODES.R)
     private void speakOut() {
         CharSequence text = subMessage;
-        tts.setPitch((float) 0.6);
-        tts.setSpeechRate((float) 0.1);
+        tts.setPitch((float) 0.3);
+        tts.setSpeechRate((float) 1.0);
         tts.speak(text,TextToSpeech.QUEUE_FLUSH,null,"id1");
     }
 

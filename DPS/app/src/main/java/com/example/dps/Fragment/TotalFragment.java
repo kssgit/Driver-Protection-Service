@@ -78,8 +78,8 @@ public class TotalFragment extends Fragment {
 
     public void initView(View v){
         totalchart = (PieChart) v.findViewById(R.id.totalchart);
-        testview = (TextView) v.findViewById(R.id.testView);
-        testview.setText(user_id);
+//        testview = (TextView) v.findViewById(R.id.testView);
+//        testview.setText(user_id);
         setPieChart();
     }
 

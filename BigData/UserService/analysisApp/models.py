@@ -11,7 +11,6 @@ class User(models.Model) :
     create_time = models.DateField(auto_now_add=True)
     serial_no1 = models.CharField(max_length=50)
 
-
 class Co2(models.Model) :
     time = models.DateTimeField(auto_now_add=True)
     amount = models.IntegerField()

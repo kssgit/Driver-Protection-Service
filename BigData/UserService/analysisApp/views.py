@@ -43,7 +43,7 @@ def one_day_data(request):
     pass
 
 
-# 사용자 정보 수정 
+# 사용자 정보 수정 (시리얼 번호 변경)
 @api_view(["PUT"])
 def user_data_update(request):
     user_id = request.data['user_id']
@@ -51,7 +51,7 @@ def user_data_update(request):
     user = User.objects.get(user_id = user_id)
     user.serial_no1 =serial_no1
     user.save()
-    return Response({"result":"update"})
+    return Response({"result":True})
 
 
 # 회원 가입
@@ -97,6 +97,7 @@ def serial_no_check(request,serial_no1):
         return Response({'result':False})
     except Exception:
         return Response({'result':True})
+
 
 
 # 로그인 

@@ -7,12 +7,24 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- TTS -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <queries>
         <intent>
             <action android:name="android.speech.RecognitionService" />
         </intent>
+    </queries> <!-- mqtt -->
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
     </queries>
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- TTS -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".InitApplication"
@@ -22,8 +34,9 @@
         android:roundIcon="@mipmap/ic_main_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DayDriveRiskActivity"></activity>
-        <activity android:name=".TestActivity"></activity>
+        <activity android:name=".DayDriveRiskActivity" />
+        <activity android:name=".TestActivity" />
+
         <meta-data
             android:name="android.max_aspect"
             android:value="2.1" />
@@ -37,23 +50,12 @@
         </activity>
         <activity android:name=".MainActivity" />
         <activity android:name=".AnalysisActivity" />
-        <activity android:name=".JoinActivity" /> 
+        <activity android:name=".JoinActivity" />
+
         <meta-data
             android:name="android.max_aspect"
-            android:value="2.1" /><!-- mqtt -->
+            android:value="2.1" /> <!-- mqtt -->
         <service android:name="org.eclipse.paho.android.service.MqttService" />
-    </application> <!-- mqtt -->
-    <queries>
-        <intent>
-            <action android:name="android.speech.RecognitionService" />
-        </intent>
-    </queries>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- TTS -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-
-    <uses-permission android:name="android.permission.INTERNET" />
-
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    </application>
 
 </manifest>
