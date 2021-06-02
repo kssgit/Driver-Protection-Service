@@ -138,8 +138,7 @@ public class AnalysisActivity extends AppCompatActivity {
         });
     }
     //mqtt_pub
-    public void mqtt_pub(){
-        mqttAndroidClient = new MqttAndroidClient(this,"tcp://54.180.214.221:1883", MqttClient.generateClientId());
+    public void mqtt_pub(MqttAndroidClient mqttAndroidClient){
 
         try {
             mqttAndroidClient.connect();
@@ -152,8 +151,7 @@ public class AnalysisActivity extends AppCompatActivity {
 
 
 //  mqtt sub
-    public void mqtt_sub() {
-        mqttAndroidClient = new MqttAndroidClient(this,"tcp://54.180.214.221:1883", MqttClient.generateClientId());
+    public void mqtt_sub(MqttAndroidClient mqttAndroidClient) {
 //        mqttAndroidClient = new MqttAndroidClient(this,"tcp://13.208.255.135:1883", MqttClient.generateClientId());
         //알람 mp3 설정
         MediaPlayer player = MediaPlayer.create(this,R.raw.alam2);
@@ -208,7 +206,10 @@ public class AnalysisActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_analysis);
-        mqtt_pub();
+        //mqtt client
+        mqttAndroidClient = new MqttAndroidClient(this,"tcp://54.180.214.221:1883", MqttClient.generateClientId());
+
+        mqtt_pub(mqttAndroidClient);
 
         //tts
         tts = new TextToSpeech(this , listener);
@@ -298,7 +299,7 @@ public class AnalysisActivity extends AppCompatActivity {
 
 
         //mqtt 호출
-        mqtt_sub() ;
+        mqtt_sub(mqttAndroidClient) ;
 
         //notification
         initSwitchLayout(WorkManager.getInstance(getApplicationContext()));
