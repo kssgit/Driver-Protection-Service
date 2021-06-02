@@ -1,12 +1,8 @@
 package com.example.dps;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.media.MediaPlayer;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -15,25 +11,18 @@ import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import com.example.dps.Adapter.AnalysisPagerAdapter;
 import com.example.dps.login.SaveSharedPreference;
 import com.example.dps.notification.Constants;
 import com.example.dps.notification.NotificationHelper;
 import com.example.dps.notification.PreferenceHelper;
-
 import com.github.angads25.toggle.LabeledSwitch;
 import com.github.angads25.toggle.interfaces.OnToggledListener;
 import com.google.android.material.tabs.TabLayout;
-import com.google.gson.JsonObject;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -42,7 +31,6 @@ import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.security.cert.CertificateException;
@@ -61,7 +49,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.viewpager.widget.ViewPager;
 import androidx.work.WorkManager;
-
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -81,8 +68,8 @@ public class AnalysisActivity extends AppCompatActivity {
     TextView co2_view;
     //JsonData
     Integer co2=1632;
-    JSONArray eye;
-    JSONArray emotion;
+    JSONObject co2Mean;
+
     //retrofit
     Retrofit retrofit;
     RetrofitAPI retrofitAPI;
@@ -138,6 +125,7 @@ public class AnalysisActivity extends AppCompatActivity {
         });
     }
     //mqtt_pub
+    /*
     public void mqtt_pub(MqttAndroidClient mqttAndroidClient){
 
         try {
@@ -148,7 +136,7 @@ public class AnalysisActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
+    */
 
 //  mqtt sub
     public void mqtt_sub(MqttAndroidClient mqttAndroidClient) {
@@ -209,7 +197,7 @@ public class AnalysisActivity extends AppCompatActivity {
         //mqtt client
         mqttAndroidClient = new MqttAndroidClient(this,"tcp://54.180.214.221:1883", MqttClient.generateClientId());
 
-        mqtt_pub(mqttAndroidClient);
+        //mqtt_pub(mqttAndroidClient);
 
         //tts
         tts = new TextToSpeech(this , listener);
@@ -235,7 +223,7 @@ public class AnalysisActivity extends AppCompatActivity {
                 .client(getUnsafeOkHttpClient().build())
                 .build();
         retrofitAPI = retrofit.create(RetrofitAPI.class);
-        Call<ResponseBody> call = retrofitAPI.getUserdata(user_id);
+        Call<ResponseBody> call = retrofitAPI.getCo2Meandata(user_id);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -244,8 +232,8 @@ public class AnalysisActivity extends AppCompatActivity {
                     String jsonstr = body.string();
                     JSONObject jsonObj = new JSONObject(jsonstr);
 //                    co2 = (JSONArray) jsonObj.get("Co2");
-                    eye = (JSONArray) jsonObj.get("Eye");
-                    emotion = (JSONArray) jsonObj.get("Emotion");
+                    System.out.println(jsonObj);
+                    co2Mean = (JSONObject) jsonObj.get("Co2Mean");
 
                     //네비게이션 바
 //                    final NavigationTabStrip navigationTabStrip = (NavigationTabStrip) findViewById(R.id.navigation_header);
@@ -257,7 +245,7 @@ public class AnalysisActivity extends AppCompatActivity {
                     mTabLayout = (TabLayout) findViewById(R.id.analysis_tab_layout);
                     mViewPager = (ViewPager) findViewById(R.id.pager_content);
                     mAnalysisPagerAdapter = new AnalysisPagerAdapter(
-                            getSupportFragmentManager(), mTabLayout.getTabCount(), user_id,co2,emotion,eye);
+                            getSupportFragmentManager(), mTabLayout.getTabCount(), user_id,co2,co2Mean);
 
                     mViewPager.setAdapter(mAnalysisPagerAdapter);
                     mViewPager.setOffscreenPageLimit(mTabLayout.getTabCount());

@@ -14,10 +14,10 @@ import androidx.fragment.app.Fragment;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link EmotionFragment#newInstance} factory method to
+ * Use the {@link Co2MeanFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class EmotionFragment extends Fragment {
+public class Co2MeanFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -28,7 +28,7 @@ public class EmotionFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public EmotionFragment() {
+    public Co2MeanFragment() {
         // Required empty public constructor
     }
 
@@ -41,8 +41,8 @@ public class EmotionFragment extends Fragment {
      * @return A new instance of fragment EmotionFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static EmotionFragment newInstance(String param1, String param2) {
-        EmotionFragment fragment = new EmotionFragment();
+    public static Co2MeanFragment newInstance(String param1, String param2) {
+        Co2MeanFragment fragment = new Co2MeanFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -51,10 +51,10 @@ public class EmotionFragment extends Fragment {
     }
 
     View view;
-    BarChart emotionchart;
+    BarChart co2meanchart;
     String user_id;
-    String[] time;
-    int[] emotion;
+    int[] hour;
+    int[] co2_mean;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,18 +64,18 @@ public class EmotionFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_emotion, container, false);
+        view = inflater.inflate(R.layout.fragment_co2mean, container, false);
         Bundle bundle = getArguments();
 
         if (bundle != null) {
             user_id = bundle.getString("user_id"); //Name 받기.
-            time = bundle.getStringArray("time");
-            emotion = bundle.getIntArray("emotion");
-            System.out.println("EmotionFragment: "+user_id); //확인
+            hour = bundle.getIntArray("hour");
+            co2_mean = bundle.getIntArray("co2_mean");
+            System.out.println("Co2MeanFragment: "+user_id); //확인
 
-            for(int i=0;i<time.length;i++){
-                System.out.println( (i + 1) + "time : "+time[i]);
-                System.out.println( (i + 1) + "emotion" + emotion[i]);
+            for(int i=0;i<hour.length;i++){
+                System.out.println( (i + 1) + "hour : "+hour[i]);
+                System.out.println( (i + 1) + "co2_mean" + co2_mean[i]);
             }
         }
         initView(view);
@@ -84,7 +84,7 @@ public class EmotionFragment extends Fragment {
 
 
     public void initView(View v){
-        emotionchart = (BarChart) v.findViewById(R.id.emotionchart);
+        co2meanchart = (BarChart) v.findViewById(R.id.co2meanchart);
         setBarChart();
 
 
@@ -93,13 +93,13 @@ public class EmotionFragment extends Fragment {
     // 막대 차트 설정
     private void setBarChart() {
 
-        emotionchart.clearChart();
+        co2meanchart.clearChart();
 
-        for(int i=0;i<time.length;i++){
-            emotionchart.addBar(new BarModel(time[i].substring(11, 16), emotion[i], 0xFF56B7F1));
+        for(int i=0;i<hour.length;i++){
+            co2meanchart.addBar(new BarModel(Integer.toString(hour[i]), co2_mean[i], 0xFF56B7F1));
         }
 
-        emotionchart.startAnimation();
+        co2meanchart.startAnimation();
 
     }
 

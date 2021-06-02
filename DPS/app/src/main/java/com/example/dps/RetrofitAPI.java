@@ -58,4 +58,9 @@ public interface RetrofitAPI {
     // 어제 하루 데이터 가져오기
     @GET("api/yesterdaydata/{userid}")
     Call<ResponseBody> getYesterdaydata(@Path("userid") String userid);
+
+    // 어제 하루 데이터 가져오기
+    @GET("api/co2MeanData/{userid}")
+    Call<ResponseBody> getCo2Meandata(@Path("userid") String userid);
+
 }

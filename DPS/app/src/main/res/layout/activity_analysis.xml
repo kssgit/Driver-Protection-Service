@@ -48,28 +48,17 @@
             android:layout_height="wrap_content">
 
             <com.google.android.material.tabs.TabItem
-                android:id="@+id/total_tab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="종합 분석" />
-
-            <com.google.android.material.tabs.TabItem
                 android:id="@+id/co2_tab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="이산화탄소" />
 
             <com.google.android.material.tabs.TabItem
-                android:id="@+id/emotion_tab"
+                android:id="@+id/co2mean_tab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="감정" />
+                android:text="평균 이산화탄소" />
 
-            <com.google.android.material.tabs.TabItem
-                android:id="@+id/eye_tab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="눈감음" />
         </com.google.android.material.tabs.TabLayout>
 
         <androidx.viewpager.widget.ViewPager
