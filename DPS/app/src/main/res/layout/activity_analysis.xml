@@ -51,6 +51,8 @@
                 android:id="@+id/co2_tab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/font"
+                android:textColor="#FFFFF3"
                 android:text="이산화탄소" />
 
             <com.google.android.material.tabs.TabItem

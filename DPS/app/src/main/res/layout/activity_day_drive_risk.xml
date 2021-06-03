@@ -25,6 +25,7 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="40dp"
             android:id="@+id/scrollView">
 
 
@@ -36,10 +37,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:fontFamily="@font/font"
                     android:textColor="#FFFFF3"
                     android:textSize="40dp"
                     android:textStyle="bold|normal"
-                    android:text="전날의 내 감정 수치"/>
+                    android:text="전날의 운전 상태 보고서"/>
                 <org.eazegraph.lib.charts.PieChart
                     android:id="@+id/yesterday_emotionchart"
                     android:layout_width="match_parent"
@@ -54,22 +56,24 @@
                     app:egFixedBarWidth="true"
                     app:egLegendHeight="40dp"
                     app:egShowDecimal="true" >
-
                 </org.eazegraph.lib.charts.PieChart>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textColor="#FFFFF3"
-                    android:textSize="40dp"
+                    android:text="감정 상태 분석"
                     android:textStyle="bold|normal"
-                    android:text="전날의 내 졸음 수치"/>
+                    android:gravity="center"
+                    android:fontFamily="@font/font"
+                    android:textColor="#000000"
+                    android:textSize="20dp"
+                    />
+
                 <org.eazegraph.lib.charts.PieChart
                     android:id="@+id/yesterday_sleepchart"
                     android:layout_width="match_parent"
                     android:layout_height="256dp"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="30dp"
                     android:layout_marginRight="10dp"
                     android:layout_marginBottom="20dp"
                     android:padding="10dp"
@@ -80,7 +84,16 @@
                     app:egShowDecimal="true" >
 
                 </org.eazegraph.lib.charts.PieChart>
-
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="졸음 수치 분석"
+                    android:textStyle="bold|normal"
+                    android:gravity="center"
+                    android:fontFamily="@font/font"
+                    android:textColor="#000000"
+                    android:textSize="20dp"
+                    />
 
             </LinearLayout>
 
