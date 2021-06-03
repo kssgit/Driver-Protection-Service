@@ -104,11 +104,12 @@ public class DayDriveRiskActivity extends AppCompatActivity {
                         sleep = (JSONObject) jsonObj.get("Sleep");
 
                         color = new String[5];
-                        color[0] = "#FE6DA8";
-                        color[1] = "#56B7F1";
-                        color[2] = "#CDA67F";
-                        color[3] = "#E71D36";
-                        color[4] = "#98DFFF";
+                        color[0] = "#d5b6b6";
+                        color[4] = "#ef5285";
+                        color[1] = "#d395d0";
+                        color[2] = "#8fd9b6";
+                        color[3] = "#feee7d";
+                        color[4] = "#f0ecdd";
 
                         // 감정 그래프 그리기
                         System.out.println("emotion: " + emotion);
