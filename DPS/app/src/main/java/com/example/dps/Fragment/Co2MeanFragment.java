@@ -7,8 +7,9 @@ import android.view.ViewGroup;
 
 import com.example.dps.R;
 
-import org.eazegraph.lib.charts.BarChart;
-import org.eazegraph.lib.models.BarModel;
+import org.eazegraph.lib.charts.ValueLineChart;
+import org.eazegraph.lib.models.ValueLinePoint;
+import org.eazegraph.lib.models.ValueLineSeries;
 
 import androidx.fragment.app.Fragment;
 
@@ -51,7 +52,7 @@ public class Co2MeanFragment extends Fragment {
     }
 
     View view;
-    BarChart co2meanchart;
+    ValueLineChart co2meanchart;
     String user_id;
     int[] hour;
     int[] co2_mean;
@@ -84,7 +85,7 @@ public class Co2MeanFragment extends Fragment {
 
 
     public void initView(View v){
-        co2meanchart = (BarChart) v.findViewById(R.id.co2meanchart);
+        co2meanchart = (ValueLineChart) v.findViewById(R.id.co2meanchart);
         setBarChart();
 
 
@@ -93,12 +94,17 @@ public class Co2MeanFragment extends Fragment {
     // 막대 차트 설정
     private void setBarChart() {
 
-        co2meanchart.clearChart();
+        ValueLineSeries series = new ValueLineSeries();
+        series.setColor(0xFF56B7F1);
+
+        series.addPoint(new ValueLinePoint("공란", 0));
 
         for(int i=0;i<hour.length;i++){
-            co2meanchart.addBar(new BarModel(Integer.toString(hour[i]), co2_mean[i], 0xFF56B7F1));
+            series.addPoint(new ValueLinePoint(Integer.toString(hour[i]), co2_mean[i]));
         }
+        series.addPoint(new ValueLinePoint("공란", 0));
 
+        co2meanchart.addSeries(series);
         co2meanchart.startAnimation();
 
     }
