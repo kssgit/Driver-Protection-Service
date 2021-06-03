@@ -39,7 +39,7 @@
                     android:gravity="center"
                     android:fontFamily="@font/font"
                     android:textColor="#FFFFF3"
-                    android:textSize="40dp"
+                    android:textSize="30dp"
                     android:textStyle="bold|normal"
                     android:text="전날의 운전 상태 보고서"/>
                 <org.eazegraph.lib.charts.PieChart

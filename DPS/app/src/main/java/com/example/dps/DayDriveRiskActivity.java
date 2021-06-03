@@ -105,7 +105,6 @@ public class DayDriveRiskActivity extends AppCompatActivity {
 
                         color = new String[5];
                         color[0] = "#d5b6b6";
-                        color[4] = "#ef5285";
                         color[1] = "#d395d0";
                         color[2] = "#8fd9b6";
                         color[3] = "#feee7d";
