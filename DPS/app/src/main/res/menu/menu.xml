@@ -2,15 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/one_day_data"
-        android:title="어제 운전 상태 보고서">
+        android:title="전날 운전 상태 보고서">
     </item>
     <item
         android:id="@+id/all_data"
-        android:title="내 운전 위험 수치 확인하기">
-    </item>
-    <item
-        android:id="@+id/user_update"
-        android:title="시리얼 번호 변경">
+        android:title="이산화탄소 데이터">
     </item>
     <item
         android:id="@+id/logout_btn"

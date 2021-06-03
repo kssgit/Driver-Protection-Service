@@ -84,12 +84,12 @@ public class Co2Fragment extends Fragment {
     public void initView(View v){
         co2_view = view.findViewById(R.id.co2_view);
         if(amount > 2000) {
-            co2_view.setTextColor(Color.parseColor("#E71D36"));
-            co2_view.setText("" + amount + "ppm");
+            co2_view.setTextColor(Color.parseColor("#ef5285"));
+            co2_view.setText("" + amount + " ppm");
         }
         if(amount < 2000) {
             co2_view.setTextColor(Color.parseColor("#FFFFF3"));
-            co2_view.setText("" + amount + "ppm");
+            co2_view.setText("" + amount + " ppm");
         }
 
 

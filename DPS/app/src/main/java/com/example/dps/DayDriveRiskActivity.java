@@ -105,7 +105,6 @@ public class DayDriveRiskActivity extends AppCompatActivity {
 
                         color = new String[5];
                         color[0] = "#d5b6b6";
-                        color[4] = "#ef5285";
                         color[1] = "#d395d0";
                         color[2] = "#8fd9b6";
                         color[3] = "#feee7d";
@@ -270,9 +269,6 @@ public class DayDriveRiskActivity extends AppCompatActivity {
                 SaveSharedPreference.clearUserName(this);
                 ActivityCompat.finishAffinity(this);
                 System.exit(0);
-                return true;
-            case R.id.user_update:
-
                 return true;
             case R.id.all_data:
                 Intent intent_1 = new Intent(this,AnalysisActivity.class);

@@ -315,9 +315,6 @@ public class AnalysisActivity extends AppCompatActivity {
                 ActivityCompat.finishAffinity(AnalysisActivity.this);
                 System.exit(0);
                 return true;
-            case R.id.user_update:
-                System.out.println();
-                return true;
             case R.id.all_data:
                 return true;
             case R.id.one_day_data:
