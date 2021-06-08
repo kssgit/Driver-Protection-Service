@@ -87,6 +87,24 @@ class MyMqtt_Sub():
         self.emo_pred_time = None
         self.is_face_exist = False
 
+        # top_k_rd = random.randint(4, 7)
+        #
+        # Text_final = (
+        #     self.generate_sent(self.feeling(2), self.gpt2, greedy=False,
+        #                        top_k=top_k_rd,
+        #                        top_p=0.95))
+        # mid = self.okt.normalize(str(Text_final))
+        # mid_df = self.spacing_okt(mid)
+        # sentence_result = '제가 ' + self.feeling(
+        #     2) + '에 대한 문장을 만들어 볼께요.' + mid_df
+        #
+        # print(sentence_result)
+
+        MQTT_MSG = json.dumps(
+            {"type": 1, "message": "제가 침착에 대한 문장을 만들어 볼께요. 침착하게 듣고 침착하게 말 하는 사람은 그 마음에 안정감과 활력이 넘친다."})
+
+        publish.single("android/him", MQTT_MSG, hostname=self.json_data["EC2"]["AI_IP"])
+
         ###########################
         client.loop_forever()
 
@@ -285,11 +303,11 @@ class MyMqtt_Sub():
     def feeling(self, text):
         feeling_number = None
         if text == 0:
-            feeling_number = '인생'
+            feeling_number = '용서'
         elif text == 1:
             feeling_number = '용기'
         elif text == 2:
-            feeling_number = '행복'
+            feeling_number = '침착'
         elif text == 3:
             feeling_number = '사랑'
         elif text == 4:
